@@ -21,14 +21,14 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
   color: rgba(255, 255, 255, 0.95);
   background: linear-gradient(135deg, 
-    rgba(102, 126, 234, 0.3) 0%, 
-    rgba(118, 75, 162, 0.25) 25%, 
-    rgba(240, 147, 251, 0.2) 50%, 
-    rgba(245, 87, 108, 0.25) 75%, 
-    rgba(79, 172, 254, 0.3) 100%),
-    linear-gradient(45deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    rgba(102, 126, 234, 0.08) 0%, 
+    rgba(118, 75, 162, 0.06) 25%, 
+    rgba(240, 147, 251, 0.04) 50%, 
+    rgba(245, 87, 108, 0.06) 75%, 
+    rgba(79, 172, 254, 0.08) 100%),
+    linear-gradient(45deg, #0a0b0f 0%, #0f1419 50%, #141a20 100%);
   background-size: 400% 400%, 100% 100%;
-  animation: gradientShift 20s ease infinite;
+  animation: gradientShift 30s ease infinite;
   font-smooth: always;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -42,26 +42,26 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-// Glassmorphism base
-@mixin glassmorphic($opacity: 0.25, $blur: 20px, $border-opacity: 0.18) {
+// Glassmorphism base - toned down for better readability
+@mixin glassmorphic($opacity: 0.15, $blur: 15px, $border-opacity: 0.12) {
   background: rgba(255, 255, 255, $opacity);
-  backdrop-filter: blur($blur) saturate(180%);
-  -webkit-backdrop-filter: blur($blur) saturate(180%);
+  backdrop-filter: blur($blur) saturate(120%);
+  -webkit-backdrop-filter: blur($blur) saturate(120%);
   border: 1px solid rgba(255, 255, 255, $border-opacity);
   box-shadow: 
-    0 8px 32px 0 rgba(31, 38, 135, 0.37),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 0 rgba(255, 255, 255, 0.1);
+    0 4px 20px 0 rgba(31, 38, 135, 0.15),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
-@mixin glassmorphic-dark($opacity: 0.15, $blur: 25px) {
+@mixin glassmorphic-dark($opacity: 0.25, $blur: 15px) {
   background: rgba(0, 0, 0, $opacity);
-  backdrop-filter: blur($blur) saturate(180%);
-  -webkit-backdrop-filter: blur($blur) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur($blur) saturate(120%);
+  -webkit-backdrop-filter: blur($blur) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 
-    0 8px 32px 0 rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+    0 4px 20px 0 rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
 }
 
 @mixin apple-button($variant: primary) {
@@ -277,15 +277,15 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.1);
 /* Header - Glassmorphic Design
   ============================================ */
 header {
-  @include glassmorphic(0.2, 25px, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  @include glassmorphic(0.35, 20px, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   height: 70px;
   z-index: 1000;
   position: fixed;
   top: 0;
   width: 100%;
-  backdrop-filter: blur(25px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(120%);
   
   @include mq('900px') {
     padding: 0 20px;
@@ -428,8 +428,8 @@ header {
   position: fixed;
   overflow-x: hidden;
   overflow-y: auto;
-  @include glassmorphic(0.15, 25px, 0.1);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  @include glassmorphic(0.3, 20px, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
   z-index: 100;
   
   /* Custom scrollbar */
@@ -692,16 +692,16 @@ header {
 .tasks {
   width: calc(100vw - 320px);
   max-width: 800px;
-  @include glassmorphic(0.1, 25px, 0.15);
+  @include glassmorphic(0.25, 20px, 0.2);
   margin-left: 320px;
   min-height: calc(100vh - 90px);
   padding: 32px 40px;
   margin-top: 90px;
   border-radius: 24px;
-  backdrop-filter: blur(25px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(120%);
   box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
   position: relative;
   
   &::before {
