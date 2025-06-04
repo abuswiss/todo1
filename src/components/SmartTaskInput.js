@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiPlus, FiZap, FiCalendar, FiUser, FiTag, FiClock, FiTarget } from 'react-icons/fi';
-import { RiSparklingFill } from 'react-icons/ri';
 
 const SmartTaskInput = ({ onAddTask, projectId }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -14,7 +13,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
   const aiFeatures = [
     { 
       id: 'smart-parse', 
-      icon: <RiSparklingFill />, 
+      icon: <FiZap />, 
       title: 'Smart Parse', 
       description: 'AI understands natural language like "Call Sarah tomorrow at 3pm"',
       example: 'Try: "Plan team meeting next Friday morning"'
@@ -155,7 +154,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
     return (
       <div className="ai-parsed-preview">
         <div className="ai-parsed-header">
-          <RiSparklingFill className="ai-icon" />
+          <FiZap className="ai-icon" />
           <span>AI Enhanced Task</span>
           <span className="confidence">Confidence: {Math.round(parsedTask.confidence * 100)}%</span>
         </div>
@@ -223,7 +222,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
   const AIFeatureButtons = () => (
     <div className="ai-features">
       <div className="ai-features-header">
-        <RiSparklingFill className="ai-icon" />
+        <FiZap className="ai-icon" />
         <span>AI Features</span>
       </div>
       
@@ -255,7 +254,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         >
           <FiPlus className="plus-icon" />
           <span>Add task with AI assistance</span>
-          <RiSparklingFill className="ai-badge" />
+          <FiZap className="ai-badge" />
         </button>
       </div>
     );
@@ -281,7 +280,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
               onClick={() => setShowAIFeatures(!showAIFeatures)}
               title="Toggle AI Features"
             >
-              <RiSparklingFill className={`ai-icon ${isProcessing ? 'processing' : ''}`} />
+              <FiZap className={`ai-icon ${isProcessing ? 'processing' : ''}`} />
             </button>
             
             <button
@@ -310,7 +309,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         
         {isProcessing && (
           <div className="ai-processing">
-            <RiSparklingFill className="processing-icon" />
+            <FiZap className="processing-icon" />
             <span>AI is analyzing your task...</span>
           </div>
         )}

@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiSend, FiMessageCircle, FiX, FiZap, FiMinimize2, FiMaximize2 } from 'react-icons/fi';
-import { RiSparklingFill } from 'react-icons/ri';
+import { FiSend, FiMessageCircle, FiX, FiZap, FiMinimize2, FiMaximize2, FiStar } from 'react-icons/fi';
 
 const PerplexityChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -144,7 +143,7 @@ const PerplexityChat = () => {
           onClick={() => setIsOpen(true)}
           title="Open AI Assistant"
         >
-          <RiSparklingFill className="chat-icon" />
+          <FiStar className="chat-icon" />
           <span className="chat-label">AI Assistant</span>
         </button>
       </div>
@@ -155,7 +154,7 @@ const PerplexityChat = () => {
     <div className={`perplexity-chat ${isMinimized ? 'minimized' : 'expanded'}`}>
       <div className="chat-header">
         <div className="header-left">
-          <RiSparklingFill className="header-icon" />
+          <FiStar className="header-icon" />
           <h3>AI Assistant</h3>
           <span className="powered-by">Powered by Perplexity</span>
         </div>
@@ -187,7 +186,7 @@ const PerplexityChat = () => {
                 <div className="message-content">
                   {message.role === 'assistant' && (
                     <div className="message-avatar">
-                      <RiSparklingFill />
+                      <FiStar />
                     </div>
                   )}
                   
@@ -217,7 +216,7 @@ const PerplexityChat = () => {
               <div className="message assistant">
                 <div className="message-content">
                   <div className="message-avatar">
-                    <RiSparklingFill className="loading" />
+                    <FiStar className="loading" />
                   </div>
                   <div className="message-text">
                     <div className="typing-indicator">
