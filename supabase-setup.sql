@@ -1,12 +1,9 @@
 -- Supabase Database Setup for AI Todo App
 -- Run this SQL in Supabase Dashboard > SQL Editor
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create tasks table
 CREATE TABLE tasks (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id SERIAL PRIMARY KEY, -- Use SERIAL for auto-incrementing integer IDs
     task TEXT NOT NULL,
     project_id TEXT DEFAULT '1',
     date TEXT,
@@ -21,7 +18,7 @@ CREATE TABLE tasks (
 
 -- Create projects table
 CREATE TABLE projects (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id TEXT PRIMARY KEY, -- Use TEXT for compatibility with existing code
     name TEXT NOT NULL,
     user_id TEXT DEFAULT 'demo-user',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
