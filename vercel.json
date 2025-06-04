@@ -1,0 +1,15 @@
+{
+  "functions": {
+    "api/ai-task-processor.js": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "OPENAI_API_KEY": "@openai_api_key"
+  },
+  "build": {
+    "env": {
+      "OPENAI_API_KEY": "@openai_api_key"
+    }
+  }
+}
