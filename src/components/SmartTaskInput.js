@@ -68,7 +68,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
 
   const debounceAIProcess = debounce(async (text) => {
     await processWithAI(text, 'smart-parse');
-  }, 800);
+  }, 300); // Reduced from 800ms to 300ms for faster response
 
   const processWithAI = async (text, feature = 'smart-parse', context = {}) => {
     if (!text.trim()) return;
@@ -76,6 +76,10 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
     setIsProcessing(true);
 
     try {
+      // Add 5 second timeout for faster user experience
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
       const response = await fetch('/api/ai-task-processor', {
         method: 'POST',
         headers: {
@@ -89,7 +93,10 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
             ...context,
           },
         }),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const result = await response.json();
@@ -101,7 +108,11 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         }
       }
     } catch (error) {
-      console.error('AI processing error:', error);
+      if (error.name === 'AbortError') {
+        console.log('AI request timeout - continuing without AI suggestions');
+      } else {
+        console.error('AI processing error:', error);
+      }
     } finally {
       setIsProcessing(false);
     }

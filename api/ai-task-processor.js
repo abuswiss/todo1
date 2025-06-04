@@ -1,4 +1,8 @@
-// AI Task Processor - Deep Integration with OpenAI
+// AI Task Processor - Optimized for Speed
+// Simple cache for repeat requests (resets on server restart)
+const responseCache = new Map();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export default async function handler(req, res) {
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
   // Enable CORS for local development
@@ -25,8 +29,22 @@ export default async function handler(req, res) {
       return;
     }
 
-    // For now, return intelligent mock responses until OpenAI key is configured
+    // Check cache first for faster responses
+    const cacheKey = `${feature || 'smart-parse'}_${userInput.toLowerCase().trim()}`;
+    const cached = responseCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      res.status(200).json({ ...cached.response, cached: true });
+      return;
+    }
+
+    // Process with AI
     const response = await processWithAI(userInput, feature, context);
+    
+    // Cache the response
+    responseCache.set(cacheKey, {
+      response,
+      timestamp: Date.now()
+    });
     
     res.status(200).json(response);
   } catch (error) {
@@ -37,6 +55,12 @@ export default async function handler(req, res) {
 
 async function processWithAI(userInput, feature, context) {
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  
+  // Quick pattern matching for common inputs - instant response
+  const quickResult = getQuickParseResult(userInput, feature);
+  if (quickResult) {
+    return quickResult;
+  }
   
   // If OpenAI API key is available, use real AI processing
   if (OPENAI_API_KEY) {
@@ -72,74 +96,57 @@ async function processWithAI(userInput, feature, context) {
 
 async function processWithOpenAI(userInput, feature, context, apiKey) {
   const prompts = {
-    'smart-parse': `You are an expert task parser. Parse this natural language input into structured task data.
+    'smart-parse': `Parse: "${userInput}"
 
-User input: "${userInput}"
+Return JSON:
+{
+  "taskName": "cleaned task name",
+  "date": "extracted date or null",
+  "time": "extracted time or null", 
+  "priority": "high/medium/low",
+  "people": ["names"],
+  "category": "work/personal/health/etc",
+  "tags": ["tags"],
+  "estimatedDuration": "duration",
+  "confidence": 0.8,
+  "suggestions": ["tip1", "tip2"]
+}`,
 
-Extract and return JSON with these fields:
-- taskName: The core task (cleaned up)
-- date: Any date mentioned (relative or absolute)
-- time: Any time mentioned
-- priority: high/medium/low based on urgency keywords
-- people: Array of people mentioned
-- category: Inferred category (work, personal, health, etc.)
-- tags: Relevant tags
-- estimatedDuration: Estimated time needed
-- confidence: Your confidence in parsing (0-1)
-- suggestions: Array of helpful suggestions
+    'task-breakdown': `Break down: "${userInput}"
 
-Respond only with valid JSON.`,
+Return JSON:
+{
+  "breakdown": [{"task": "step", "priority": "high/med/low", "estimatedTime": "30min"}],
+  "totalEstimatedTime": "2 hours",
+  "recommendations": ["tip1", "tip2"]
+}`,
 
-    'task-breakdown': `Break down this complex task into actionable subtasks.
+    'smart-prioritize': `Prioritize: ${JSON.stringify(context.tasks || [userInput])}
 
-Task: "${userInput}"
+Return JSON:
+{
+  "prioritizedTasks": [{"task": "name", "aiPriority": "high", "reasoning": "why"}],
+  "insights": ["insight1", "insight2"]
+}`,
 
-Return JSON with:
-- breakdown: Array of subtasks with {task, priority, estimatedTime}
-- totalEstimatedTime: Overall time estimate
-- dependencies: Any task dependencies
-- recommendations: Helpful tips
+    'contextual-suggestions': `Suggest for: "${userInput}"
 
-Respond only with valid JSON.`,
+Return JSON:
+{
+  "suggestions": ["suggestion1", "suggestion2"],
+  "relatedActions": ["action1", "action2"],
+  "bestPractices": ["tip1", "tip2"]
+}`,
 
-    'smart-prioritize': `Analyze and prioritize these tasks intelligently.
+    'smart-scheduling': `Schedule: "${userInput}"
 
-Tasks: ${JSON.stringify(context.tasks || [userInput])}
-
-Return JSON with:
-- prioritizedTasks: Tasks with aiPriority and reasoning
-- insights: Strategic insights about the task list
-- recommendations: Productivity recommendations
-
-Respond only with valid JSON.`,
-
-    'contextual-suggestions': `Provide contextual suggestions for this task.
-
-Task: "${userInput}"
-Context: ${JSON.stringify(context)}
-
-Return JSON with:
-- suggestions: Array of helpful suggestions
-- relatedActions: Recommended follow-up actions
-- resources: Useful resources or tools
-- bestPractices: Relevant best practices
-
-Respond only with valid JSON.`,
-
-    'smart-scheduling': `Provide smart scheduling recommendations.
-
-Task: "${userInput}"
-Context: ${JSON.stringify(context)}
-
-Return JSON with:
-- optimalTime: Best time to do this task
-- duration: Recommended duration
-- preparation: Prep time needed
-- bufferTime: Recommended buffer
-- conflicts: Potential scheduling conflicts
-- alternatives: Alternative time slots
-
-Respond only with valid JSON.`
+Return JSON:
+{
+  "optimalTime": "best time",
+  "duration": "estimated duration",
+  "preparation": "prep time",
+  "alternatives": ["alt1", "alt2"]
+}`
   };
 
   const prompt = prompts[feature] || prompts['smart-parse'];
@@ -151,7 +158,7 @@ Respond only with valid JSON.`
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4', // Use GPT-4 for better reasoning
+      model: 'gpt-3.5-turbo', // Use GPT-3.5 Turbo for speed
       messages: [
         {
           role: 'system',
@@ -162,8 +169,8 @@ Respond only with valid JSON.`
           content: prompt
         }
       ],
-      temperature: 0.7,
-      max_tokens: 1000
+      temperature: 0.3, // Lower temperature for faster, more consistent responses
+      max_tokens: 500   // Reduced tokens for faster responses
     })
   });
 
@@ -407,6 +414,48 @@ function smartScheduling(input, context) {
       bufferTime: recommendBufferTime(input)
     }
   };
+}
+
+// Quick pattern matching for instant responses
+function getQuickParseResult(input, feature) {
+  if (feature !== 'smart-parse') return null;
+  
+  const lower = input.toLowerCase().trim();
+  
+  // Common patterns for instant responses
+  const quickPatterns = {
+    'buy ': { category: 'shopping', tags: ['shopping'], priority: 'medium' },
+    'call ': { category: 'personal', tags: ['communication'], priority: 'medium' },
+    'email ': { category: 'work', tags: ['communication', 'work'], priority: 'medium' },
+    'meeting ': { category: 'work', tags: ['meeting', 'work'], priority: 'high', estimatedDuration: '1 hour' },
+    'urgent ': { priority: 'high', tags: ['urgent'] },
+    'doctor ': { category: 'health', tags: ['health', 'appointment'], priority: 'high' },
+    'gym ': { category: 'health', tags: ['exercise', 'health'], priority: 'medium', estimatedDuration: '1 hour' }
+  };
+  
+  for (const [pattern, defaults] of Object.entries(quickPatterns)) {
+    if (lower.startsWith(pattern)) {
+      const taskName = input.slice(pattern.length).trim();
+      return {
+        success: true,
+        fastResponse: true,
+        parsed: {
+          taskName: taskName || input,
+          date: null,
+          time: null,
+          priority: defaults.priority || 'medium',
+          people: [],
+          category: defaults.category || 'general',
+          tags: defaults.tags || [],
+          estimatedDuration: defaults.estimatedDuration || '30 minutes',
+          suggestions: generateTaskSuggestions(taskName, defaults.category)
+        },
+        confidence: 0.9
+      };
+    }
+  }
+  
+  return null;
 }
 
 // Helper functions
