@@ -3,5 +3,10 @@
     "api/ai-task-processor.js": {
       "maxDuration": 30
     }
+  },
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--openssl-legacy-provider"
+    }
   }
 }
