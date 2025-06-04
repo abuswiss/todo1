@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "firebase": "^7.15.2",
+    "@supabase/supabase-js": "^2.38.0",
     "moment": "^2.27.0",
     "sass": "^1.69.0",
     "prop-types": "^15.7.2",
