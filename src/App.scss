@@ -19,14 +19,14 @@ body {
   padding: 0;
   line-height: 1.6;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-  color: rgba(255, 255, 255, 0.95);
+  color: #ffffff;
   background: linear-gradient(135deg, 
-    rgba(102, 126, 234, 0.08) 0%, 
-    rgba(118, 75, 162, 0.06) 25%, 
-    rgba(240, 147, 251, 0.04) 50%, 
-    rgba(245, 87, 108, 0.06) 75%, 
-    rgba(79, 172, 254, 0.08) 100%),
-    linear-gradient(45deg, #0a0b0f 0%, #0f1419 50%, #141a20 100%);
+    rgba(102, 126, 234, 0.03) 0%, 
+    rgba(118, 75, 162, 0.02) 25%, 
+    rgba(240, 147, 251, 0.02) 50%, 
+    rgba(245, 87, 108, 0.02) 75%, 
+    rgba(79, 172, 254, 0.03) 100%),
+    linear-gradient(45deg, #0c0d12 0%, #12161c 50%, #1a1f26 100%);
   background-size: 400% 400%, 100% 100%;
   animation: gradientShift 30s ease infinite;
   font-smooth: always;
@@ -42,26 +42,26 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-// Glassmorphism base - toned down for better readability
+// Glassmorphism base - enhanced contrast for readability
 @mixin glassmorphic($opacity: 0.15, $blur: 15px, $border-opacity: 0.12) {
-  background: rgba(255, 255, 255, $opacity);
+  background: rgba(20, 24, 32, 0.85);
   backdrop-filter: blur($blur) saturate(120%);
   -webkit-backdrop-filter: blur($blur) saturate(120%);
   border: 1px solid rgba(255, 255, 255, $border-opacity);
   box-shadow: 
-    0 4px 20px 0 rgba(31, 38, 135, 0.15),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+    0 4px 20px 0 rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
     inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 @mixin glassmorphic-dark($opacity: 0.25, $blur: 15px) {
-  background: rgba(0, 0, 0, $opacity);
+  background: rgba(12, 15, 20, 0.9);
   backdrop-filter: blur($blur) saturate(120%);
   -webkit-backdrop-filter: blur($blur) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 
-    0 4px 20px 0 rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+    0 4px 20px 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 }
 
 @mixin apple-button($variant: primary) {
@@ -96,28 +96,32 @@ ul {
   padding: 0;
 }
 
-// Variables - Glassmorphic Theme
+// Variables - Enhanced Contrast Theme
 $primary-gradient: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
 $secondary-gradient: linear-gradient(135deg, #30D158 0%, #32ADE6 100%);
 $accent-gradient: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
-$surface-glass: rgba(255, 255, 255, 0.25);
-$surface-glass-dark: rgba(0, 0, 0, 0.15);
-$border-glass: rgba(255, 255, 255, 0.18);
-$text-primary: rgba(255, 255, 255, 0.95);
-$text-secondary: rgba(255, 255, 255, 0.7);
-$shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-$shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.1);
+$surface-glass: rgba(20, 24, 32, 0.85);
+$surface-glass-dark: rgba(12, 15, 20, 0.9);
+$border-glass: rgba(255, 255, 255, 0.2);
+$text-primary: #ffffff;
+$text-secondary: rgba(255, 255, 255, 0.85);
+$shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+$shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.3);
 
 /* Mixins - Glassmorphic Design System
   ============================================ */
 @mixin glass-overlay() {
-  @include glassmorphic(0.3, 25px, 0.2);
+  background: rgba(20, 24, 32, 0.95);
+  backdrop-filter: blur(25px) saturate(120%);
+  -webkit-backdrop-filter: blur(25px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   position: absolute;
   width: 100%;
   z-index: 1000;
   top: 85px;
   border-radius: 20px;
   animation: slideDown 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes slideDown {
@@ -187,9 +191,12 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.1);
 
 @mixin box-overlay() {
   position: absolute;
-  @include glassmorphic(0.25, 20px, 0.3);
+  background: rgba(20, 24, 32, 0.95);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 @mixin task-item() {
@@ -201,14 +208,20 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.1);
   padding: 12px 16px;
   margin: 4px 0;
   font-size: 14px;
-  @include glassmorphic(0.15, 15px, 0.15);
+  background: rgba(20, 24, 32, 0.85);
+  backdrop-filter: blur(15px) saturate(120%);
+  -webkit-backdrop-filter: blur(15px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   
   &:hover {
-    @include glassmorphic(0.25, 20px, 0.25);
+    background: rgba(20, 24, 32, 0.95);
+    border-color: rgba(255, 255, 255, 0.25);
     transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -240,14 +253,18 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.1);
   padding: 16px 20px;
   margin: 8px 0;
   font-size: 15px;
-  @include glassmorphic(0.15, 15px, 0.15);
+  background: rgba(20, 24, 32, 0.85);
+  backdrop-filter: blur(15px) saturate(120%);
+  -webkit-backdrop-filter: blur(15px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   
   &:hover {
-    @include glassmorphic(0.25, 20px, 0.25);
+    background: rgba(20, 24, 32, 0.95);
+    border-color: rgba(255, 255, 255, 0.25);
     transform: translateY(-2px);
     box-shadow: $shadow-elevated;
   }
@@ -274,10 +291,13 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.1);
   }
 }
 
-/* Header - Glassmorphic Design
+/* Header - Enhanced Contrast Design
   ============================================ */
 header {
-  @include glassmorphic(0.35, 20px, 0.25);
+  background: rgba(16, 20, 28, 0.95);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   height: 70px;
@@ -285,7 +305,7 @@ header {
   position: fixed;
   top: 0;
   width: 100%;
-  backdrop-filter: blur(20px) saturate(120%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   
   @include mq('900px') {
     padding: 0 20px;
@@ -353,12 +373,16 @@ header {
           vertical-align: middle;
           border-radius: 12px;
           transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          @include glassmorphic(0.1, 10px, 0.2);
+          background: rgba(20, 24, 32, 0.7);
+          backdrop-filter: blur(10px) saturate(120%);
+          -webkit-backdrop-filter: blur(10px) saturate(120%);
+          border: 1px solid rgba(255, 255, 255, 0.15);
 
           &:hover {
-            @include glassmorphic(0.2, 15px, 0.3);
+            background: rgba(20, 24, 32, 0.9);
+            border-color: rgba(255, 255, 255, 0.25);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
           }
 
           &.settings__add {
@@ -418,7 +442,7 @@ header {
   }
 }
 
-/* Sidebar - Glassmorphic Design
+/* Sidebar - Enhanced Contrast Design
   ============================================ */
 .sidebar {
   @include no-select();
@@ -428,8 +452,12 @@ header {
   position: fixed;
   overflow-x: hidden;
   overflow-y: auto;
-  @include glassmorphic(0.3, 20px, 0.2);
+  background: rgba(16, 20, 28, 0.9);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-right: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   z-index: 100;
   
   /* Custom scrollbar */
@@ -488,9 +516,13 @@ header {
 
     &.active, &:hover {
       font-weight: 600;
-      @include glassmorphic(0.25, 15px, 0.3);
+      background: rgba(20, 24, 32, 0.9);
+      backdrop-filter: blur(15px) saturate(120%);
+      -webkit-backdrop-filter: blur(15px) saturate(120%);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       transform: translateX(4px);
       color: white;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
       
       .sidebar__dot {
         transform: scale(1.1);
@@ -499,10 +531,12 @@ header {
     }
     
     &.active {
-      @include glassmorphic(0.3, 20px, 0.4);
+      background: rgba(20, 24, 32, 0.95);
+      border: 2px solid;
+      border-image: linear-gradient(135deg, #007AFF, #5856D6) 1;
       box-shadow: 
-        0 8px 32px 0 rgba(31, 38, 135, 0.37),
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     &:nth-child(1) {
@@ -626,9 +660,13 @@ header {
 
       &.active, &:hover {
         font-weight: 600;
-        @include glassmorphic(0.2, 15px, 0.25);
+        background: rgba(20, 24, 32, 0.9);
+        backdrop-filter: blur(15px) saturate(120%);
+        -webkit-backdrop-filter: blur(15px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         color: white;
         transform: translateX(4px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         
         div:nth-child(1) span:first-of-type svg {
           color: white;
@@ -637,7 +675,9 @@ header {
       }
       
       &.active {
-        @include glassmorphic(0.3, 20px, 0.35);
+        background: rgba(20, 24, 32, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       }
     }
   }
@@ -687,21 +727,23 @@ header {
   gap: 24px;
 }
 
-/* Tasks - Glassmorphic Design
+/* Tasks - Enhanced Contrast Design
   ============================================ */
 .tasks {
   width: calc(100vw - 320px);
   max-width: 800px;
-  @include glassmorphic(0.25, 20px, 0.2);
+  background: rgba(20, 24, 32, 0.9);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   margin-left: 320px;
   min-height: calc(100vh - 90px);
   padding: 32px 40px;
   margin-top: 90px;
   border-radius: 24px;
-  backdrop-filter: blur(20px) saturate(120%);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   position: relative;
   
   &::before {
@@ -1075,8 +1117,10 @@ header {
   margin: 24px 0;
   
   .expand-button {
-    @include glassmorphic(0.15, 15px, 0.2);
-    border: none;
+    background: rgba(20, 24, 32, 0.8);
+    backdrop-filter: blur(15px) saturate(120%);
+    -webkit-backdrop-filter: blur(15px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
     padding: 16px 24px;
     width: 100%;
@@ -1088,6 +1132,7 @@ header {
     color: $text-secondary;
     font-size: 15px;
     font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     
     .plus-icon {
       color: $text-primary;
@@ -1103,9 +1148,12 @@ header {
     }
     
     &:hover {
-      @include glassmorphic(0.25, 20px, 0.3);
+      background: rgba(20, 24, 32, 0.95);
+      border: 2px solid;
+      border-image: linear-gradient(135deg, #FFD60A, #FF9500) 1;
       color: $text-primary;
       transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       
       .plus-icon {
         transform: rotate(90deg);
@@ -1714,15 +1762,19 @@ header {
   z-index: 2000;
   width: 420px;
   max-height: 600px;
-  @include glassmorphic(0.15, 25px, 0.2);
+  background: rgba(16, 20, 28, 0.95);
+  backdrop-filter: blur(25px) saturate(120%);
+  -webkit-backdrop-filter: blur(25px) saturate(120%);
+  border: 2px solid;
+  border-image: linear-gradient(135deg, #007AFF, #5856D6, #FFD60A) 1;
   border-radius: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 
-    0 20px 60px rgba(31, 38, 135, 0.4),
-    0 8px 32px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   
   @include mq('900px') {
@@ -1745,13 +1797,15 @@ header {
   }
   
   .chat-header {
-    @include glassmorphic(0.2, 15px, 0.3);
+    background: rgba(12, 15, 20, 0.9);
+    backdrop-filter: blur(15px) saturate(120%);
+    -webkit-backdrop-filter: blur(15px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 20px 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    backdrop-filter: blur(15px);
     
     .header-left {
       display: flex;
