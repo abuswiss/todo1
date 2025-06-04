@@ -8,15 +8,19 @@ import {
   FiMaximize2,
   FiStar,
 } from 'react-icons/fi';
+import { useTasks } from '../hooks';
+import { useSelectedProjectValue } from '../context';
 
 const PerplexityChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const { selectedProject } = useSelectedProjectValue();
+  const { tasks } = useTasks(selectedProject);
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
       content:
-        "👋 Hi! I'm your AI assistant powered by Perplexity. I can help you with:\n\n• Research for your tasks\n• Planning and organization\n• Productivity tips\n• Breaking down complex projects\n• General questions and assistance\n\nWhat can I help you with today?",
+        "👋 Hi! I'm your AI assistant powered by Perplexity. I can see your current tasks and help you with:\n\n• Analyzing and prioritizing your tasks\n• Research for your specific projects\n• Breaking down complex tasks\n• Time management and productivity tips\n• General questions and assistance\n\nI'm aware of your current tasks and can provide personalized advice! What can I help you with?",
     },
   ]);
   const [input, setInput] = useState('');
@@ -57,6 +61,17 @@ const PerplexityChat = () => {
         },
         body: JSON.stringify({
           messages: newMessages.slice(-10), // Keep last 10 messages for context
+          taskContext: {
+            currentProject: selectedProject,
+            tasks: tasks.slice(0, 20).map(task => ({
+              id: task.id,
+              task: task.task,
+              priority: task.priority,
+              date: task.date,
+              projectId: task.projectId,
+              archived: task.archived
+            }))
+          }
         }),
       });
 
@@ -141,11 +156,11 @@ const PerplexityChat = () => {
   };
 
   const suggestedQuestions = [
-    'How can I improve my productivity?',
-    "What's the best way to prioritize tasks?",
-    'Help me break down a complex project',
-    'Research productivity methodologies',
-    'Time management strategies for busy schedules',
+    'How should I prioritize my current tasks?',
+    'What tasks should I focus on today?',
+    'Help me break down my complex tasks',
+    'Research strategies for my current projects',
+    'Time management tips for my workload',
   ];
 
   const handleSuggestionClick = (suggestion) => {

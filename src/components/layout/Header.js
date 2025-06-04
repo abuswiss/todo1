@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaPizzaSlice } from 'react-icons/fa';
+import { FiSun, FiMoon, FiCheckSquare } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 import { AddTask } from '../AddTask';
 
@@ -11,7 +11,8 @@ export const Header = ({ darkMode, setDarkMode }) => {
     <header className="header" data-testid="header">
       <nav>
         <div className="logo">
-          <img src="/images/logo.png" alt="Todoist" />
+          <FiCheckSquare className="logo-icon" />
+          <span>AI Todoist</span>
         </div>
         <div className="settings">
           <ul>
@@ -35,7 +36,7 @@ export const Header = ({ darkMode, setDarkMode }) => {
                 type="button"
                 onClick={() => setDarkMode(!darkMode)}
               >
-                <FaPizzaSlice />
+                {darkMode ? <FiSun /> : <FiMoon />}
               </button>
             </li>
           </ul>

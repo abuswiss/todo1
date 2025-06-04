@@ -22,8 +22,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Extract the `messages` from the body of the request
-    const { messages } = req.body;
+    // Extract the `messages` and `taskContext` from the body of the request
+    const { messages, taskContext } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
       res.status(400).json({ error: 'Messages array is required' });
@@ -42,6 +42,17 @@ export default async function handler(req, res) {
       return;
     }
 
+    // Build task context information
+    let taskContextInfo = '';
+    if (taskContext && taskContext.tasks && taskContext.tasks.length > 0) {
+      const activeTasks = taskContext.tasks.filter(task => !task.archived);
+      const taskList = activeTasks.map(task => 
+        `- ${task.task} (Priority: ${task.priority}${task.date ? `, Due: ${task.date}` : ''})`
+      ).join('\n');
+      
+      taskContextInfo = `\n\nCURRENT USER TASKS (${activeTasks.length} active tasks):\n${taskList}\n\nUse this context to provide relevant assistance with their tasks, suggest improvements, help with prioritization, or answer questions about their workload.`;
+    }
+
     // Add system message for todo app context
     const systemMessage = {
       role: 'system',
@@ -53,7 +64,7 @@ export default async function handler(req, res) {
       - Research and information for their tasks
       - General questions and assistance
       
-      Be concise, practical, and focused on helping users be more productive. If they ask about specific topics for research or work, provide accurate and up-to-date information.`
+      Be concise, practical, and focused on helping users be more productive. If they ask about specific topics for research or work, provide accurate and up-to-date information.${taskContextInfo}`
     };
 
     const messagesWithSystem = [systemMessage, ...messages];
