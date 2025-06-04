@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Header } from './components/layout/Header';
 import { Content } from './components/layout/Content';
 import { ProjectsProvider, SelectedProjectProvider } from './context';
+import PerplexityChat from './components/PerplexityChat';
 
 export const App = ({ darkModeDefault = false }) => {
   const [darkMode, setDarkMode] = useState(darkModeDefault);
@@ -16,6 +17,7 @@ export const App = ({ darkModeDefault = false }) => {
         >
           <Header darkMode={darkMode} setDarkMode={setDarkMode} />
           <Content />
+          <PerplexityChat />
         </main>
       </ProjectsProvider>
     </SelectedProjectProvider>

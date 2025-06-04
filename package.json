@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ai-sdk/perplexity": "^1.0.4",
     "@supabase/supabase-js": "^2.38.0",
+    "ai": "^4.3.16",
     "moment": "^2.27.0",
+    "openai": "^4.67.3",
     "sass": "^1.69.0",
     "prop-types": "^15.7.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-icons": "^3.10.0",
     "react-scripts": "5.0.1"
   },
