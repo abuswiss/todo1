@@ -1,5 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiPlus, FiZap, FiCalendar, FiUser, FiTag, FiClock, FiTarget } from 'react-icons/fi';
+import {
+  FiPlus,
+  FiZap,
+  FiCalendar,
+  FiUser,
+  FiTag,
+  FiClock,
+  FiTarget,
+} from 'react-icons/fi';
 
 const SmartTaskInput = ({ onAddTask, projectId }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -11,34 +19,35 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
   const inputRef = useRef(null);
 
   const aiFeatures = [
-    { 
-      id: 'smart-parse', 
-      icon: <FiZap />, 
-      title: 'Smart Parse', 
-      description: 'AI understands natural language like "Call Sarah tomorrow at 3pm"',
-      example: 'Try: "Plan team meeting next Friday morning"'
+    {
+      id: 'smart-parse',
+      icon: <FiZap />,
+      title: 'Smart Parse',
+      description:
+        'AI understands natural language like "Call Sarah tomorrow at 3pm"',
+      example: 'Try: "Plan team meeting next Friday morning"',
     },
-    { 
-      id: 'task-breakdown', 
-      icon: <FiTarget />, 
-      title: 'Task Breakdown', 
+    {
+      id: 'task-breakdown',
+      icon: <FiTarget />,
+      title: 'Task Breakdown',
       description: 'Break complex tasks into actionable steps',
-      example: 'Try: "Organize company retreat"'
+      example: 'Try: "Organize company retreat"',
     },
-    { 
-      id: 'smart-scheduling', 
-      icon: <FiCalendar />, 
-      title: 'Smart Scheduling', 
+    {
+      id: 'smart-scheduling',
+      icon: <FiCalendar />,
+      title: 'Smart Scheduling',
       description: 'AI suggests optimal timing and preparation',
-      example: 'Try: "Prepare presentation for board meeting"'
+      example: 'Try: "Prepare presentation for board meeting"',
     },
-    { 
-      id: 'contextual-suggestions', 
-      icon: <FiZap />, 
-      title: 'Smart Suggestions', 
+    {
+      id: 'contextual-suggestions',
+      icon: <FiZap />,
+      title: 'Smart Suggestions',
       description: 'Get relevant next steps and resources',
-      example: 'Try: "Write blog post about AI"'
-    }
+      example: 'Try: "Write blog post about AI"',
+    },
   ];
 
   useEffect(() => {
@@ -50,7 +59,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
   const handleInputChange = async (e) => {
     const value = e.target.value;
     setInput(value);
-    
+
     // Trigger AI processing for inputs longer than 10 characters
     if (value.length > 10 && !isProcessing) {
       debounceAIProcess(value);
@@ -63,9 +72,9 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
 
   const processWithAI = async (text, feature = 'smart-parse', context = {}) => {
     if (!text.trim()) return;
-    
+
     setIsProcessing(true);
-    
+
     try {
       const response = await fetch('/api/ai-task-processor', {
         method: 'POST',
@@ -77,14 +86,14 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
           feature,
           context: {
             projectId,
-            ...context
-          }
-        })
+            ...context,
+          },
+        }),
       });
-      
+
       if (response.ok) {
         const result = await response.json();
-        
+
         if (feature === 'smart-parse' && result.parsed) {
           setParsedTask(result.parsed);
         } else {
@@ -100,16 +109,16 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!input.trim()) return;
-    
+
     let taskData = {
       task: input,
       projectId: projectId || '1',
       date: '',
-      priority: 'medium'
+      priority: 'medium',
     };
-    
+
     // Use AI-parsed data if available
     if (parsedTask) {
       taskData = {
@@ -121,13 +130,13 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         metadata: {
           originalInput: input,
           aiParsed: parsedTask,
-          confidence: parsedTask.confidence
-        }
+          confidence: parsedTask.confidence,
+        },
       };
     }
-    
+
     onAddTask(taskData);
-    
+
     // Reset form
     setInput('');
     setParsedTask(null);
@@ -138,34 +147,36 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
   const handleAIFeatureClick = async (feature) => {
     if (!input.trim()) {
       // Show example
-      const selectedFeature = aiFeatures.find(f => f.id === feature.id);
+      const selectedFeature = aiFeatures.find((f) => f.id === feature.id);
       if (selectedFeature) {
         setInput(selectedFeature.example.replace('Try: ', ''));
       }
       return;
     }
-    
+
     await processWithAI(input, feature.id);
   };
 
   const ApplyParsedTask = () => {
     if (!parsedTask) return null;
-    
+
     return (
       <div className="ai-parsed-preview">
         <div className="ai-parsed-header">
           <FiZap className="ai-icon" />
           <span>AI Enhanced Task</span>
-          <span className="confidence">Confidence: {Math.round(parsedTask.confidence * 100)}%</span>
+          <span className="confidence">
+            Confidence: {Math.round(parsedTask.confidence * 100)}%
+          </span>
         </div>
-        
+
         <div className="parsed-details">
           <div className="detail-item">
             <FiTarget className="detail-icon" />
             <span className="detail-label">Task:</span>
             <span className="detail-value">{parsedTask.taskName}</span>
           </div>
-          
+
           {parsedTask.date && (
             <div className="detail-item">
               <FiCalendar className="detail-icon" />
@@ -173,7 +184,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
               <span className="detail-value">{parsedTask.date}</span>
             </div>
           )}
-          
+
           {parsedTask.time && (
             <div className="detail-item">
               <FiClock className="detail-icon" />
@@ -181,21 +192,25 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
               <span className="detail-value">{parsedTask.time}</span>
             </div>
           )}
-          
+
           <div className="detail-item">
             <FiTag className="detail-icon" />
             <span className="detail-label">Priority:</span>
-            <span className={`priority-badge ${parsedTask.priority}`}>{parsedTask.priority}</span>
+            <span className={`priority-badge ${parsedTask.priority}`}>
+              {parsedTask.priority}
+            </span>
           </div>
-          
+
           {parsedTask.people && parsedTask.people.length > 0 && (
             <div className="detail-item">
               <FiUser className="detail-icon" />
               <span className="detail-label">People:</span>
-              <span className="detail-value">{parsedTask.people.join(', ')}</span>
+              <span className="detail-value">
+                {parsedTask.people.join(', ')}
+              </span>
             </div>
           )}
-          
+
           {parsedTask.category && (
             <div className="detail-item">
               <FiTag className="detail-icon" />
@@ -204,7 +219,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
             </div>
           )}
         </div>
-        
+
         {parsedTask.suggestions && parsedTask.suggestions.length > 0 && (
           <div className="ai-suggestions">
             <h4>AI Suggestions:</h4>
@@ -225,10 +240,11 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         <FiZap className="ai-icon" />
         <span>AI Features</span>
       </div>
-      
+
       <div className="ai-features-grid">
         {aiFeatures.map((feature) => (
           <button
+            type="button"
             key={feature.id}
             className="ai-feature-btn"
             onClick={() => handleAIFeatureClick(feature)}
@@ -248,7 +264,8 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
   if (!isExpanded) {
     return (
       <div className="smart-task-input-collapsed">
-        <button 
+        <button
+          type="button"
           className="expand-button"
           onClick={() => setIsExpanded(true)}
         >
@@ -272,7 +289,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
             placeholder="Type naturally: 'Call Sarah tomorrow at 3pm' or 'Plan team retreat'"
             className="smart-input"
           />
-          
+
           <div className="input-actions">
             <button
               type="button"
@@ -280,9 +297,11 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
               onClick={() => setShowAIFeatures(!showAIFeatures)}
               title="Toggle AI Features"
             >
-              <FiZap className={`ai-icon ${isProcessing ? 'processing' : ''}`} />
+              <FiZap
+                className={`ai-icon ${isProcessing ? 'processing' : ''}`}
+              />
             </button>
-            
+
             <button
               type="submit"
               className="submit-btn"
@@ -290,7 +309,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
             >
               Add Task
             </button>
-            
+
             <button
               type="button"
               className="cancel-btn"
@@ -306,18 +325,18 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
             </button>
           </div>
         </div>
-        
+
         {isProcessing && (
           <div className="ai-processing">
             <FiZap className="processing-icon" />
             <span>AI is analyzing your task...</span>
           </div>
         )}
-        
+
         <ApplyParsedTask />
-        
+
         {showAIFeatures && <AIFeatureButtons />}
-        
+
         {aiSuggestions && (
           <div className="ai-suggestions-panel">
             <h4>AI Suggestions</h4>

@@ -1,5 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiSend, FiMessageCircle, FiX, FiZap, FiMinimize2, FiMaximize2, FiStar } from 'react-icons/fi';
+import {
+  FiSend,
+  FiMessageCircle,
+  FiX,
+  FiZap,
+  FiMinimize2,
+  FiMaximize2,
+  FiStar,
+} from 'react-icons/fi';
 
 const PerplexityChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,8 +15,9 @@ const PerplexityChat = () => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: '👋 Hi! I\'m your AI assistant powered by Perplexity. I can help you with:\n\n• Research for your tasks\n• Planning and organization\n• Productivity tips\n• Breaking down complex projects\n• General questions and assistance\n\nWhat can I help you with today?'
-    }
+      content:
+        "👋 Hi! I'm your AI assistant powered by Perplexity. I can help you with:\n\n• Research for your tasks\n• Planning and organization\n• Productivity tips\n• Breaking down complex projects\n• General questions and assistance\n\nWhat can I help you with today?",
+    },
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +44,7 @@ const PerplexityChat = () => {
 
     const userMessage = { role: 'user', content: input.trim() };
     const newMessages = [...messages, userMessage];
-    
+
     setMessages(newMessages);
     setInput('');
     setIsLoading(true);
@@ -54,43 +63,46 @@ const PerplexityChat = () => {
       if (response.ok) {
         // Check if it's a streaming response
         const contentType = response.headers.get('content-type');
-        
+
         if (contentType?.includes('text/plain')) {
           // Handle streaming response
           const reader = response.body?.getReader();
           const decoder = new TextDecoder();
-          
+
           if (reader) {
-            setMessages(prev => [...prev, { role: 'assistant', content: '', streaming: true }]);
-            
+            setMessages((prev) => [
+              ...prev,
+              { role: 'assistant', content: '', streaming: true },
+            ]);
+
             let assistantContent = '';
-            
+
             try {
               while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
-                
+
                 const chunk = decoder.decode(value, { stream: true });
                 assistantContent += chunk;
-                
-                setMessages(prev => {
+
+                setMessages((prev) => {
                   const updated = [...prev];
                   updated[updated.length - 1] = {
                     role: 'assistant',
                     content: assistantContent,
-                    streaming: true
+                    streaming: true,
                   };
                   return updated;
                 });
               }
             } finally {
               reader.releaseLock();
-              setMessages(prev => {
+              setMessages((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1] = {
                   role: 'assistant',
                   content: assistantContent,
-                  streaming: false
+                  streaming: false,
                 };
                 return updated;
               });
@@ -99,33 +111,41 @@ const PerplexityChat = () => {
         } else {
           // Handle JSON response (fallback)
           const data = await response.json();
-          setMessages(prev => [...prev, { 
-            role: 'assistant', 
-            content: data.response || data.error || 'Sorry, I encountered an error.',
-            fallback: data.fallback 
-          }]);
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content:
+                data.response || data.error || 'Sorry, I encountered an error.',
+              fallback: data.fallback,
+            },
+          ]);
         }
       } else {
         throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
       console.error('Chat error:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: '❌ Sorry, I\'m having trouble connecting right now. Please try again later.',
-        error: true 
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content:
+            "❌ Sorry, I'm having trouble connecting right now. Please try again later.",
+          error: true,
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const suggestedQuestions = [
-    "How can I improve my productivity?",
+    'How can I improve my productivity?',
     "What's the best way to prioritize tasks?",
-    "Help me break down a complex project",
-    "Research productivity methodologies",
-    "Time management strategies for busy schedules"
+    'Help me break down a complex project',
+    'Research productivity methodologies',
+    'Time management strategies for busy schedules',
   ];
 
   const handleSuggestionClick = (suggestion) => {
@@ -138,7 +158,8 @@ const PerplexityChat = () => {
   if (!isOpen) {
     return (
       <div className="perplexity-chat-trigger">
-        <button 
+        <button
+          type="button"
           className="chat-trigger-btn"
           onClick={() => setIsOpen(true)}
           title="Open AI Assistant"
@@ -151,24 +172,28 @@ const PerplexityChat = () => {
   }
 
   return (
-    <div className={`perplexity-chat ${isMinimized ? 'minimized' : 'expanded'}`}>
+    <div
+      className={`perplexity-chat ${isMinimized ? 'minimized' : 'expanded'}`}
+    >
       <div className="chat-header">
         <div className="header-left">
           <FiStar className="header-icon" />
           <h3>AI Assistant</h3>
           <span className="powered-by">Powered by Perplexity</span>
         </div>
-        
+
         <div className="header-actions">
           <button
+            type="button"
             className="header-btn"
             onClick={() => setIsMinimized(!isMinimized)}
-            title={isMinimized ? "Expand" : "Minimize"}
+            title={isMinimized ? 'Expand' : 'Minimize'}
           >
             {isMinimized ? <FiMaximize2 /> : <FiMinimize2 />}
           </button>
-          
+
           <button
+            type="button"
             className="header-btn close-btn"
             onClick={() => setIsOpen(false)}
             title="Close"
@@ -189,19 +214,20 @@ const PerplexityChat = () => {
                       <FiStar />
                     </div>
                   )}
-                  
+
                   <div className="message-text">
                     {message.content.split('\\n').map((line, lineIndex) => (
                       <div key={lineIndex}>
                         {line}
-                        {lineIndex < message.content.split('\\n').length - 1 && <br />}
+                        {lineIndex <
+                          message.content.split('\\n').length - 1 && <br />}
                       </div>
                     ))}
-                    
+
                     {message.streaming && (
                       <span className="streaming-indicator">▋</span>
                     )}
-                    
+
                     {message.fallback && (
                       <div className="fallback-notice">
                         💡 Add your Perplexity API key for enhanced responses
@@ -211,7 +237,7 @@ const PerplexityChat = () => {
                 </div>
               </div>
             ))}
-            
+
             {isLoading && !messages[messages.length - 1]?.streaming && (
               <div className="message assistant">
                 <div className="message-content">
@@ -220,15 +246,15 @@ const PerplexityChat = () => {
                   </div>
                   <div className="message-text">
                     <div className="typing-indicator">
-                      <span></span>
-                      <span></span>
-                      <span></span>
+                      <span />
+                      <span />
+                      <span />
                     </div>
                   </div>
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
 
@@ -238,6 +264,7 @@ const PerplexityChat = () => {
               <div className="suggestions-grid">
                 {suggestedQuestions.map((question, index) => (
                   <button
+                    type="button"
                     key={index}
                     className="suggestion-btn"
                     onClick={() => handleSuggestionClick(question)}
@@ -260,7 +287,7 @@ const PerplexityChat = () => {
                 className="chat-input"
                 disabled={isLoading}
               />
-              
+
               <button
                 type="submit"
                 className="send-btn"

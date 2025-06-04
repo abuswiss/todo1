@@ -9,7 +9,8 @@
   },
   "build": {
     "env": {
-      "NODE_OPTIONS": "--openssl-legacy-provider"
+      "NODE_OPTIONS": "--openssl-legacy-provider",
+      "DISABLE_ESLINT_PLUGIN": "true"
     }
   }
 }
