@@ -1,64 +1,36 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
 
-// Initialize Firebase with placeholder config for demo purposes
-// In production, you would use real Firebase credentials
-const firebaseConfig = firebase.initializeApp({
-  apiKey: "demo-api-key",
-  authDomain: "demo-project.firebaseapp.com",
-  databaseURL: "https://demo-project.firebaseio.com",
-  projectId: "demo-project",
-  storageBucket: "demo-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "demo-app-id",
-});
+// Firebase configuration using environment variables
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+};
 
-// For demo purposes, we'll use a mock Firestore implementation
-// This prevents errors during build while maintaining component compatibility
-const mockFirestore = {
-  collection: (collectionName) => ({
-    add: (data) => Promise.resolve({ id: 'mock-id-' + Date.now() }),
-    where: () => ({
-      get: () => Promise.resolve({ 
-        docs: [
-          {
-            id: 'sample-task-1',
-            data: () => ({
-              task: 'Welcome to your AI-powered todo app!',
-              projectId: '1',
-              date: '',
-              priority: 'medium',
-              archived: false,
-              userId: 'demo-user',
-              aiEnhanced: true,
-              metadata: {
-                originalInput: 'Welcome to your AI-powered todo app!',
-                aiParsed: {
-                  taskName: 'Welcome to your AI-powered todo app!',
-                  category: 'general',
-                  priority: 'medium',
-                  confidence: 0.9
-                }
-              }
-            })
-          }
-        ]
-      })
-    }),
-    doc: (docId) => ({
-      update: (data) => Promise.resolve(),
-      delete: () => Promise.resolve()
-    })
-  }),
-  FieldValue: {
-    serverTimestamp: () => new Date()
+// Initialize Firebase only if config is available
+let firebaseApp;
+try {
+  if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+    firebaseApp = firebase.initializeApp(firebaseConfig);
+  } else {
+    console.warn('Firebase config not found. Using fallback configuration.');
+    // Fallback for development/demo
+    firebaseApp = firebase.initializeApp({
+      apiKey: "demo-key",
+      authDomain: "demo.firebaseapp.com", 
+      projectId: "demo-project",
+      storageBucket: "demo.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "demo-app"
+    });
   }
-};
+} catch (error) {
+  console.error('Firebase initialization error:', error);
+}
 
-// Create a mock firebase object that matches the expected interface
-const mockFirebase = {
-  firestore: () => mockFirestore,
-  ...mockFirestore
-};
-
-export { mockFirebase as firebase };
+export { firebaseApp as firebase };
