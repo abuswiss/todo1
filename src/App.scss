@@ -21,13 +21,14 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
   color: rgba(255, 255, 255, 0.95);
   background: linear-gradient(135deg, 
-    #667eea 0%, 
-    #764ba2 25%, 
-    #f093fb 50%, 
-    #f5576c 75%, 
-    #4facfe 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+    rgba(102, 126, 234, 0.3) 0%, 
+    rgba(118, 75, 162, 0.25) 25%, 
+    rgba(240, 147, 251, 0.2) 50%, 
+    rgba(245, 87, 108, 0.25) 75%, 
+    rgba(79, 172, 254, 0.3) 100%),
+    linear-gradient(45deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background-size: 400% 400%, 100% 100%;
+  animation: gradientShift 20s ease infinite;
   font-smooth: always;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -1397,19 +1398,146 @@ header {
 .ai-suggestions-panel {
   margin: 20px 0;
   @include glassmorphic(0.2, 15px, 0.25);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 20px;
   
-  h4 {
-    color: $text-primary;
-    margin-bottom: 12px;
+  .ai-suggestions-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    
+    .ai-icon {
+      color: #FFD60A;
+      font-size: 16px;
+    }
+    
+    h4 {
+      color: $text-primary;
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
   }
   
-  pre {
-    color: $text-secondary;
-    font-size: 12px;
-    overflow-x: auto;
-    white-space: pre-wrap;
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    @include glassmorphic(0.1, 10px, 0.2);
+    border-radius: 8px;
+    
+    .suggestion-icon {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      width: 16px;
+      flex-shrink: 0;
+    }
+    
+    .suggestion-label {
+      font-size: 13px;
+      color: $text-secondary;
+      min-width: 60px;
+      font-weight: 500;
+    }
+    
+    .suggestion-value {
+      font-size: 14px;
+      color: $text-primary;
+      font-weight: 500;
+      flex: 1;
+    }
+    
+    .priority-badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      
+      &.high { background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); color: white; }
+      &.medium { background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%); color: white; }
+      &.low { background: linear-gradient(135deg, #A8E6CF 0%, #7FCDCD 100%); color: white; }
+    }
+  }
+  
+  .ai-recommendations {
+    margin-top: 16px;
+    
+    h5 {
+      color: $text-primary;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      
+      &::before {
+        content: '💡';
+        font-size: 12px;
+      }
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      
+      li {
+        padding: 8px 12px;
+        margin: 4px 0;
+        @include glassmorphic(0.1, 10px, 0.2);
+        border-radius: 8px;
+        font-size: 13px;
+        color: $text-secondary;
+        line-height: 1.4;
+        
+        &::before {
+          content: '→';
+          color: #FFD60A;
+          margin-right: 8px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+  
+  .confidence-meter {
+    margin-top: 16px;
+    padding: 12px;
+    @include glassmorphic(0.15, 10px, 0.25);
+    border-radius: 8px;
+    
+    .confidence-label {
+      font-size: 12px;
+      color: $text-secondary;
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: block;
+    }
+    
+    .confidence-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 4px;
+      
+      .confidence-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #FFD60A 0%, #FF9500 100%);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+      }
+    }
+    
+    .confidence-value {
+      font-size: 11px;
+      color: $text-primary;
+      font-weight: 600;
+    }
   }
 }
 

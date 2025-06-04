@@ -339,8 +339,70 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
 
         {aiSuggestions && (
           <div className="ai-suggestions-panel">
-            <h4>AI Suggestions</h4>
-            <pre>{JSON.stringify(aiSuggestions, null, 2)}</pre>
+            <div className="ai-suggestions-header">
+              <FiZap className="ai-icon" />
+              <h4>AI Suggestions</h4>
+            </div>
+            
+            {aiSuggestions.taskName && (
+              <div className="suggestion-item">
+                <FiTarget className="suggestion-icon" />
+                <span className="suggestion-label">Task:</span>
+                <span className="suggestion-value">{aiSuggestions.taskName}</span>
+              </div>
+            )}
+            
+            {aiSuggestions.category && (
+              <div className="suggestion-item">
+                <FiTag className="suggestion-icon" />
+                <span className="suggestion-label">Category:</span>
+                <span className="suggestion-value">{aiSuggestions.category}</span>
+              </div>
+            )}
+            
+            {aiSuggestions.priority && (
+              <div className="suggestion-item">
+                <FiTag className="suggestion-icon" />
+                <span className="suggestion-label">Priority:</span>
+                <span className={`priority-badge ${aiSuggestions.priority}`}>
+                  {aiSuggestions.priority}
+                </span>
+              </div>
+            )}
+            
+            {aiSuggestions.people && aiSuggestions.people.length > 0 && (
+              <div className="suggestion-item">
+                <FiUser className="suggestion-icon" />
+                <span className="suggestion-label">People:</span>
+                <span className="suggestion-value">{aiSuggestions.people.join(', ')}</span>
+              </div>
+            )}
+            
+            {aiSuggestions.suggestions && aiSuggestions.suggestions.length > 0 && (
+              <div className="ai-recommendations">
+                <h5>Recommendations:</h5>
+                <ul>
+                  {aiSuggestions.suggestions.map((suggestion, index) => (
+                    <li key={index}>{suggestion}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {aiSuggestions.confidence && (
+              <div className="confidence-meter">
+                <span className="confidence-label">AI Confidence:</span>
+                <div className="confidence-bar">
+                  <div 
+                    className="confidence-fill" 
+                    style={{ width: `${aiSuggestions.confidence * 100}%` }}
+                  />
+                </div>
+                <span className="confidence-value">
+                  {Math.round(aiSuggestions.confidence * 100)}%
+                </span>
+              </div>
+            )}
           </div>
         )}
       </form>
