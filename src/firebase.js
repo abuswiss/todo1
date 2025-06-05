@@ -18,6 +18,15 @@ class SupabaseQuery {
 
   // Convert camelCase field names to snake_case for database
   convertFieldName(field) {
+    // For projects table, some fields don't need conversion
+    if (this.collectionName === 'projects') {
+      const projectFieldMap = {
+        'userId': 'user_id',
+        'createdAt': 'created_at'
+      };
+      return projectFieldMap[field] || field;
+    }
+    
     const fieldMap = {
       'projectId': 'project_id',
       'userId': 'user_id',
@@ -40,6 +49,16 @@ class SupabaseQuery {
 
   // Convert snake_case back to camelCase for app
   convertDataFromDb(item) {
+    if (this.collectionName === 'projects') {
+      return {
+        id: item.id,
+        name: item.name,
+        userId: item.user_id,
+        projectId: item.id, // For projects, projectId is the same as id
+        createdAt: item.created_at
+      };
+    }
+    
     return {
       id: item.id,
       task: item.task,
