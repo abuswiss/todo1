@@ -22,7 +22,8 @@ class SupabaseQuery {
     if (this.collectionName === 'projects') {
       const projectFieldMap = {
         'userId': 'user_id',
-        'createdAt': 'created_at'
+        'createdAt': 'created_at',
+        'projectId': 'id' // Special case: projectId maps to id for projects table
       };
       return projectFieldMap[field] || field;
     }
