@@ -190,7 +190,6 @@ const firebase = {
           // Convert camelCase to snake_case for database
           const dbData = {};
           Object.keys(updateData).forEach(key => {
-            const dbKey = this.convertFieldName ? this.convertFieldName(key) : key;
             if (key === 'archived' || key === 'task' || key === 'date' || key === 'priority') {
               dbData[key] = updateData[key];
             } else if (key === 'projectId') {

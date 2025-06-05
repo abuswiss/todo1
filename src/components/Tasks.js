@@ -15,6 +15,8 @@ export const Tasks = () => {
   const { projects } = useProjectsValue();
   const { tasks } = useTasks(selectedProject);
   const [useSmartInput, setUseSmartInput] = useState(true);
+  const [editingTask, setEditingTask] = useState(null);
+  const [editingTaskText, setEditingTaskText] = useState('');
 
   let projectName = '';
 
@@ -79,21 +81,32 @@ export const Tasks = () => {
     }
   };
 
-  const handleEditTask = async (taskId, currentTask) => {
-    const newTask = window.prompt('Edit task:', currentTask);
-    if (newTask && newTask !== currentTask) {
+  const handleEditTask = (taskId, currentTask) => {
+    setEditingTask(taskId);
+    setEditingTaskText(currentTask);
+  };
+
+  const handleSaveEdit = async () => {
+    if (editingTaskText.trim() && editingTaskText !== '') {
       try {
         await firebase
           .firestore()
           .collection('tasks')
-          .doc(taskId)
+          .doc(editingTask)
           .update({
-            task: newTask
+            task: editingTaskText.trim()
           });
+        setEditingTask(null);
+        setEditingTaskText('');
       } catch (error) {
         console.error('Error updating task:', error);
       }
     }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTask(null);
+    setEditingTaskText('');
   };
 
   const renderTaskItem = (task) => {
@@ -205,6 +218,54 @@ export const Tasks = () => {
           <FiZap size={48} />
           <h3>Ready to get organized?</h3>
           <p>Add your first task using our AI-powered smart input above.</p>
+        </div>
+      )}
+
+      {editingTask && (
+        <div className="edit-task-overlay">
+          <div className="edit-task-modal">
+            <div className="edit-task-header">
+              <h3>Edit Task</h3>
+              <button 
+                className="close-btn"
+                onClick={handleCancelEdit}
+              >
+                ×
+              </button>
+            </div>
+            <div className="edit-task-content">
+              <input
+                type="text"
+                value={editingTaskText}
+                onChange={(e) => setEditingTaskText(e.target.value)}
+                className="edit-task-input"
+                placeholder="Enter task description..."
+                autoFocus
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSaveEdit();
+                  } else if (e.key === 'Escape') {
+                    handleCancelEdit();
+                  }
+                }}
+              />
+              <div className="edit-task-actions">
+                <button 
+                  className="save-btn"
+                  onClick={handleSaveEdit}
+                  disabled={!editingTaskText.trim()}
+                >
+                  Save Changes
+                </button>
+                <button 
+                  className="cancel-btn"
+                  onClick={handleCancelEdit}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
