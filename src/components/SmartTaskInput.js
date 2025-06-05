@@ -60,21 +60,37 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
     const value = e.target.value;
     setInput(value);
 
-    // Trigger AI processing for inputs longer than 15 characters or when user pauses typing
-    if (value.length > 15 && !isProcessing) {
+    // Clear existing AI data when user is actively typing
+    if (parsedTask) {
+      setParsedTask(null);
+    }
+    if (aiSuggestions) {
+      setAiSuggestions(null);
+    }
+
+    // Trigger AI processing for inputs longer than 8 characters
+    if (value.length > 8 && !isProcessing) {
       debounceAIProcess(value);
     }
   };
 
-  const debounceAIProcess = debounce(async (text) => {
-    // Only process if the text appears to be a complete thought (ends with punctuation or has multiple words)
-    const words = text.trim().split(/\s+/);
-    const endsWithPunctuation = /[.!?]$/.test(text.trim());
-    
-    if (words.length >= 3 || endsWithPunctuation) {
-      await processWithAI(text, 'smart-parse');
+  const handleInputBlur = async (e) => {
+    const value = e.target.value.trim();
+    // Process on blur if we have meaningful content and no current processing
+    if (value.length > 5 && !isProcessing && !parsedTask) {
+      await processWithAI(value, 'smart-parse');
     }
-  }, 800); // Increased debounce to let users finish typing
+  };
+
+  const debounceAIProcess = debounce(async (text) => {
+    const trimmedText = text.trim();
+    // Process if we have at least 2 words
+    const words = trimmedText.split(/\s+/).filter(word => word.length > 0);
+    
+    if (words.length >= 2) {
+      await processWithAI(trimmedText, 'smart-parse');
+    }
+  }, 1200); // Longer debounce to let users finish typing
 
   const processWithAI = async (text, feature = 'smart-parse', context = {}) => {
     if (!text.trim()) return;
@@ -174,6 +190,57 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
     await processWithAI(input, feature.id);
   };
 
+  const handleSuggestionClick = async (suggestion) => {
+    // Add the main task first if not already added
+    if (input.trim()) {
+      let mainTaskData = {
+        task: input.trim(),
+        projectId: projectId || '1',
+        date: '',
+        priority: 'medium',
+      };
+
+      // Use AI-parsed data if available for main task
+      if (parsedTask) {
+        mainTaskData = {
+          task: parsedTask.taskName || input.trim(),
+          projectId: projectId || '1',
+          date: parsedTask.date || '',
+          priority: parsedTask.priority || 'medium',
+          aiEnhanced: true,
+          metadata: {
+            originalInput: input,
+            aiParsed: parsedTask,
+          },
+        };
+      }
+
+      // Add main task
+      await onAddTask(mainTaskData);
+
+      // Add suggestion as a related task
+      const suggestionTaskData = {
+        task: suggestion,
+        projectId: projectId || '1',
+        date: '',
+        priority: 'low',
+        aiEnhanced: true,
+        metadata: {
+          relatedTo: input.trim(),
+          type: 'suggestion',
+        },
+      };
+
+      await onAddTask(suggestionTaskData);
+
+      // Reset form
+      setInput('');
+      setParsedTask(null);
+      setAiSuggestions(null);
+      setIsExpanded(false);
+    }
+  };
+
   const ApplyParsedTask = () => {
     if (!parsedTask) return null;
 
@@ -236,12 +303,21 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
 
         {parsedTask.suggestions && parsedTask.suggestions.length > 0 && (
           <div className="ai-suggestions">
-            <h4>AI Suggestions:</h4>
-            <ul>
+            <h4>Smart Suggestions:</h4>
+            <div className="suggestions-grid">
               {parsedTask.suggestions.map((suggestion, index) => (
-                <li key={index}>{suggestion}</li>
+                <button
+                  key={index}
+                  type="button"
+                  className="suggestion-btn clickable"
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  title="Click to add as related task"
+                >
+                  <span className="suggestion-text">{suggestion}</span>
+                  <span className="add-icon">+</span>
+                </button>
               ))}
-            </ul>
+            </div>
           </div>
         )}
       </div>
@@ -300,6 +376,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
             type="text"
             value={input}
             onChange={handleInputChange}
+            onBlur={handleInputBlur}
             placeholder="Type naturally: 'Call Sarah tomorrow at 3pm' or 'Plan team retreat'"
             className="smart-input"
           />
@@ -394,12 +471,21 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
             
             {aiSuggestions.suggestions && aiSuggestions.suggestions.length > 0 && (
               <div className="ai-recommendations">
-                <h5>Recommendations:</h5>
-                <ul>
+                <h5>Smart Recommendations:</h5>
+                <div className="suggestions-grid">
                   {aiSuggestions.suggestions.map((suggestion, index) => (
-                    <li key={index}>{suggestion}</li>
+                    <button
+                      key={index}
+                      type="button"
+                      className="suggestion-btn clickable"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      title="Click to add as related task"
+                    >
+                      <span className="suggestion-text">{suggestion}</span>
+                      <span className="add-icon">+</span>
+                    </button>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
             

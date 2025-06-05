@@ -509,13 +509,114 @@ function estimateDuration(input) {
 }
 
 function generateTaskSuggestions(taskName, category) {
-  const suggestions = {
-    work: ['Set reminder 1 day before', 'Prepare agenda', 'Block calendar time'],
-    personal: ['Add to shopping list', 'Set location reminder', 'Share with family'],
-    health: ['Set recurring reminder', 'Add to calendar', 'Prepare insurance info']
+  const lowerTask = taskName.toLowerCase();
+  
+  // Context-aware suggestions based on task content
+  if (lowerTask.includes('call') || lowerTask.includes('phone') || lowerTask.includes('contact')) {
+    return [
+      'Find their contact information',
+      'Prepare talking points',
+      'Choose appropriate time zone',
+      'Set follow-up reminder'
+    ];
+  }
+  
+  if (lowerTask.includes('meeting') || lowerTask.includes('interview')) {
+    return [
+      'Send calendar invite',
+      'Prepare agenda',
+      'Research attendees',
+      'Book meeting room'
+    ];
+  }
+  
+  if (lowerTask.includes('email') || lowerTask.includes('message') || lowerTask.includes('write')) {
+    return [
+      'Draft key points',
+      'Review recipient details',
+      'Set send time',
+      'Prepare attachments'
+    ];
+  }
+  
+  if (lowerTask.includes('buy') || lowerTask.includes('purchase') || lowerTask.includes('shop')) {
+    return [
+      'Check budget availability',
+      'Compare prices online',
+      'Read reviews',
+      'Check return policy'
+    ];
+  }
+  
+  if (lowerTask.includes('plan') || lowerTask.includes('organize') || lowerTask.includes('prepare')) {
+    return [
+      'Create detailed timeline',
+      'List required resources',
+      'Identify key stakeholders',
+      'Set milestones'
+    ];
+  }
+  
+  if (lowerTask.includes('exercise') || lowerTask.includes('workout') || lowerTask.includes('gym')) {
+    return [
+      'Pack gym clothes',
+      'Plan workout routine',
+      'Set hydration reminder',
+      'Track progress'
+    ];
+  }
+  
+  if (lowerTask.includes('doctor') || lowerTask.includes('appointment') || lowerTask.includes('medical')) {
+    return [
+      'Gather insurance information',
+      'Prepare questions to ask',
+      'Bring previous records',
+      'Set arrival reminder'
+    ];
+  }
+  
+  if (lowerTask.includes('travel') || lowerTask.includes('trip') || lowerTask.includes('flight')) {
+    return [
+      'Check travel documents',
+      'Pack essential items',
+      'Confirm reservations',
+      'Set departure reminder'
+    ];
+  }
+  
+  if (lowerTask.includes('study') || lowerTask.includes('learn') || lowerTask.includes('course')) {
+    return [
+      'Gather study materials',
+      'Find quiet study space',
+      'Set learning goals',
+      'Schedule practice time'
+    ];
+  }
+  
+  if (lowerTask.includes('presentation') || lowerTask.includes('present') || lowerTask.includes('demo')) {
+    return [
+      'Create slide outline',
+      'Practice delivery',
+      'Test all technology',
+      'Prepare for questions'
+    ];
+  }
+  
+  // Category-based fallbacks (improved)
+  const categoryFallbacks = {
+    work: ['Block focus time', 'Notify relevant stakeholders', 'Prepare materials', 'Set deadline reminder'],
+    personal: ['Set location reminder', 'Check weather forecast', 'Inform family/friends', 'Prepare backup plan'],
+    health: ['Set recurring reminder', 'Research preparation steps', 'Contact healthcare provider', 'Track in health app'],
+    finance: ['Check budget impact', 'Review account balances', 'Set payment reminder', 'Save receipts'],
+    home: ['Check needed supplies', 'Clear schedule time', 'Prepare workspace', 'Set completion reminder']
   };
 
-  return suggestions[category] || ['Set reminder', 'Add notes', 'Set priority'];
+  return categoryFallbacks[category] || [
+    'Break into smaller steps',
+    'Set completion deadline', 
+    'Gather needed resources',
+    'Plan optimal timing'
+  ];
 }
 
 function calculateConfidence(input, date, time, peopleCount) {
