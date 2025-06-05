@@ -58,7 +58,7 @@ export const Tasks = () => {
           userId: 'demo-user',
           aiEnhanced: taskData.aiEnhanced || false,
           metadata: taskData.metadata || {},
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          createdAt: new Date().toISOString(),
         });
     } catch (error) {
       console.error('Error adding task:', error);
