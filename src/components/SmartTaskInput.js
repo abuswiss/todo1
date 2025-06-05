@@ -60,15 +60,21 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
     const value = e.target.value;
     setInput(value);
 
-    // Trigger AI processing for inputs longer than 10 characters
-    if (value.length > 10 && !isProcessing) {
+    // Trigger AI processing for inputs longer than 15 characters or when user pauses typing
+    if (value.length > 15 && !isProcessing) {
       debounceAIProcess(value);
     }
   };
 
   const debounceAIProcess = debounce(async (text) => {
-    await processWithAI(text, 'smart-parse');
-  }, 300); // Reduced from 800ms to 300ms for faster response
+    // Only process if the text appears to be a complete thought (ends with punctuation or has multiple words)
+    const words = text.trim().split(/\s+/);
+    const endsWithPunctuation = /[.!?]$/.test(text.trim());
+    
+    if (words.length >= 3 || endsWithPunctuation) {
+      await processWithAI(text, 'smart-parse');
+    }
+  }, 800); // Increased debounce to let users finish typing
 
   const processWithAI = async (text, feature = 'smart-parse', context = {}) => {
     if (!text.trim()) return;
@@ -176,9 +182,6 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         <div className="ai-parsed-header">
           <FiZap className="ai-icon" />
           <span>AI Enhanced Task</span>
-          <span className="confidence">
-            Confidence: {Math.round(parsedTask.confidence * 100)}%
-          </span>
         </div>
 
         <div className="parsed-details">
@@ -400,20 +403,6 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
               </div>
             )}
             
-            {aiSuggestions.confidence && (
-              <div className="confidence-meter">
-                <span className="confidence-label">AI Confidence:</span>
-                <div className="confidence-bar">
-                  <div 
-                    className="confidence-fill" 
-                    style={{ width: `${aiSuggestions.confidence * 100}%` }}
-                  />
-                </div>
-                <span className="confidence-value">
-                  {Math.round(aiSuggestions.confidence * 100)}%
-                </span>
-              </div>
-            )}
           </div>
         )}
       </form>

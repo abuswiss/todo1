@@ -65,6 +65,37 @@ export const Tasks = () => {
     }
   };
 
+  const handleDeleteTask = async (taskId) => {
+    if (window.confirm('Are you sure you want to delete this task?')) {
+      try {
+        await firebase
+          .firestore()
+          .collection('tasks')
+          .doc(taskId)
+          .delete();
+      } catch (error) {
+        console.error('Error deleting task:', error);
+      }
+    }
+  };
+
+  const handleEditTask = async (taskId, currentTask) => {
+    const newTask = window.prompt('Edit task:', currentTask);
+    if (newTask && newTask !== currentTask) {
+      try {
+        await firebase
+          .firestore()
+          .collection('tasks')
+          .doc(taskId)
+          .update({
+            task: newTask
+          });
+      } catch (error) {
+        console.error('Error updating task:', error);
+      }
+    }
+  };
+
   const renderTaskItem = (task) => {
     const isAIEnhanced = task.aiEnhanced;
     const metadata = task.metadata || {};
@@ -117,10 +148,16 @@ export const Tasks = () => {
         </div>
         
         <div className="task-actions">
-          <button title="Edit task">
+          <button 
+            title="Edit task"
+            onClick={() => handleEditTask(task.id, task.task)}
+          >
             <FiEdit2 size={14} />
           </button>
-          <button title="Delete task">
+          <button 
+            title="Delete task"
+            onClick={() => handleDeleteTask(task.id)}
+          >
             <FiTrash2 size={14} />
           </button>
         </div>

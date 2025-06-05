@@ -187,9 +187,26 @@ const firebase = {
 
       doc: (docId) => ({
         update: async (updateData) => {
+          // Convert camelCase to snake_case for database
+          const dbData = {};
+          Object.keys(updateData).forEach(key => {
+            const dbKey = this.convertFieldName ? this.convertFieldName(key) : key;
+            if (key === 'archived' || key === 'task' || key === 'date' || key === 'priority') {
+              dbData[key] = updateData[key];
+            } else if (key === 'projectId') {
+              dbData[collectionName === 'projects' ? 'id' : 'project_id'] = updateData[key];
+            } else if (key === 'userId') {
+              dbData['user_id'] = updateData[key];
+            } else if (key === 'aiEnhanced') {
+              dbData['ai_enhanced'] = updateData[key];
+            } else {
+              dbData[key] = updateData[key];
+            }
+          });
+
           const { error } = await supabase
             .from(collectionName)
-            .update(updateData)
+            .update(dbData)
             .eq('id', docId);
 
           if (error) throw error;
