@@ -13,7 +13,14 @@ import { FiZap, FiList, FiClock, FiUser, FiTag, FiEdit2, FiTrash2 } from 'react-
 export const Tasks = () => {
   const { selectedProject } = useSelectedProjectValue();
   const { projects } = useProjectsValue();
-  const { tasks } = useTasks(selectedProject);
+  const { 
+    tasks, 
+    addTaskOptimistic, 
+    updateTaskOptimistic, 
+    deleteTaskOptimistic, 
+    archiveTaskOptimistic,
+    revertOptimisticUpdate 
+  } = useTasks(selectedProject);
   const [useSmartInput, setUseSmartInput] = useState(true);
   const [editingTask, setEditingTask] = useState(null);
   const [editingTaskText, setEditingTaskText] = useState('');
@@ -47,29 +54,49 @@ export const Tasks = () => {
       collatedDate = moment().add(7, 'days').format('DD/MM/YYYY');
     }
 
+    const finalTaskData = {
+      archived: false,
+      projectId,
+      task: taskData.task,
+      date: collatedDate || taskData.date || '',
+      priority: taskData.priority || 'medium',
+      userId: 'demo-user',
+      aiEnhanced: taskData.aiEnhanced || false,
+      metadata: taskData.metadata || {},
+      parentTaskId: taskData.parentTaskId || null, // For subtasks
+      createdAt: new Date().toISOString(),
+    };
+
+    // Optimistic update - show immediately
+    const tempId = addTaskOptimistic(finalTaskData);
+    const originalTasks = tasks;
+
     try {
-      await firebase
+      // Background database update
+      const docRef = await firebase
         .firestore()
         .collection('tasks')
-        .add({
-          archived: false,
-          projectId,
-          task: taskData.task,
-          date: collatedDate || taskData.date || '',
-          priority: taskData.priority || 'medium',
-          userId: 'demo-user',
-          aiEnhanced: taskData.aiEnhanced || false,
-          metadata: taskData.metadata || {},
-          createdAt: new Date().toISOString(),
-        });
+        .add(finalTaskData);
+      
+      // Update the temp task with real ID when database responds
+      updateTaskOptimistic(tempId, { id: docRef.id, _optimistic: false });
     } catch (error) {
       console.error('Error adding task:', error);
+      // Revert optimistic update on error
+      revertOptimisticUpdate(originalTasks);
     }
   };
 
   const handleDeleteTask = async (taskId) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
+      const originalTasks = tasks;
+      const taskToDelete = tasks.find(t => t.id === taskId);
+      
+      // Optimistic update - remove immediately
+      deleteTaskOptimistic(taskId);
+
       try {
+        // Background database update
         await firebase
           .firestore()
           .collection('tasks')
@@ -77,6 +104,8 @@ export const Tasks = () => {
           .delete();
       } catch (error) {
         console.error('Error deleting task:', error);
+        // Revert optimistic update on error
+        revertOptimisticUpdate(originalTasks);
       }
     }
   };
@@ -88,7 +117,16 @@ export const Tasks = () => {
 
   const handleSaveEdit = async () => {
     if (editingTaskText.trim() && editingTaskText !== '') {
+      const originalTasks = tasks;
+      const currentTask = tasks.find(t => t.id === editingTask);
+      
+      // Optimistic update - show changes immediately
+      updateTaskOptimistic(editingTask, { task: editingTaskText.trim() });
+      setEditingTask(null);
+      setEditingTaskText('');
+
       try {
+        // Background database update
         await firebase
           .firestore()
           .collection('tasks')
@@ -96,10 +134,13 @@ export const Tasks = () => {
           .update({
             task: editingTaskText.trim()
           });
-        setEditingTask(null);
-        setEditingTaskText('');
       } catch (error) {
         console.error('Error updating task:', error);
+        // Revert optimistic update on error
+        revertOptimisticUpdate(originalTasks);
+        // Reopen edit modal with original text
+        setEditingTask(editingTask);
+        setEditingTaskText(currentTask.task);
       }
     }
   };
@@ -109,14 +150,18 @@ export const Tasks = () => {
     setEditingTaskText('');
   };
 
-  const renderTaskItem = (task) => {
+  const renderTaskItem = (task, isSubtask = false) => {
     const isAIEnhanced = task.aiEnhanced;
     const metadata = task.metadata || {};
     
     return (
-      <li key={`${task.id}`} className={`task-item ${isAIEnhanced ? 'ai-enhanced' : ''}`}>
+      <li key={`${task.id}`} className={`task-item ${isAIEnhanced ? 'ai-enhanced' : ''} ${isSubtask ? 'subtask' : ''}`}>
         <div className="checkbox-holder">
-          <Checkbox id={task.id} taskDesc={task.task} />
+          <Checkbox 
+            id={task.id} 
+            taskDesc={task.task} 
+            onOptimisticArchive={archiveTaskOptimistic}
+          />
         </div>
         
         <div className="task-content">
@@ -157,6 +202,13 @@ export const Tasks = () => {
                 AI
               </span>
             )}
+            
+            {metadata.type === 'subtask' && (
+              <span className="subtask-badge" title="AI Generated Subtask">
+                <FiList size={12} />
+                Subtask
+              </span>
+            )}
           </div>
         </div>
         
@@ -176,6 +228,31 @@ export const Tasks = () => {
         </div>
       </li>
     );
+  };
+
+  const renderTasksWithSubtasks = () => {
+    // Group tasks by parent-child relationships
+    const parentTasks = tasks.filter(task => !task.parentTaskId || task.parentTaskId === null);
+    const subtasks = tasks.filter(task => task.parentTaskId && task.parentTaskId !== null);
+    
+    const taskElements = [];
+    
+    parentTasks.forEach(parentTask => {
+      // Add the parent task
+      taskElements.push(renderTaskItem(parentTask, false));
+      
+      // Add its subtasks
+      const childTasks = subtasks.filter(subtask => 
+        subtask.parentTaskId === parentTask.id || 
+        (subtask.parentTaskId === 'pending' && subtask.metadata?.parentTask === parentTask.task)
+      );
+      
+      childTasks.forEach(subtask => {
+        taskElements.push(renderTaskItem(subtask, true));
+      });
+    });
+    
+    return taskElements;
   };
 
   return (
@@ -210,7 +287,7 @@ export const Tasks = () => {
       )}
 
       <ul className="tasks__list">
-        {tasks.map(renderTaskItem)}
+        {renderTasksWithSubtasks()}
       </ul>
       
       {tasks.length === 0 && (

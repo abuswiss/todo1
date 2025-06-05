@@ -16,6 +16,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedTask, setParsedTask] = useState(null);
   const [showAIFeatures, setShowAIFeatures] = useState(false);
+  const [selectedSuggestions, setSelectedSuggestions] = useState(new Set());
   const inputRef = useRef(null);
 
   const aiFeatures = [
@@ -50,47 +51,18 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
     },
   ];
 
-  useEffect(() => {
-    if (isExpanded && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isExpanded]);
-
-  const handleInputChange = async (e) => {
-    const value = e.target.value;
-    setInput(value);
-
-    // Clear existing AI data when user is actively typing
-    if (parsedTask) {
-      setParsedTask(null);
-    }
-    if (aiSuggestions) {
-      setAiSuggestions(null);
-    }
-
-    // Trigger AI processing for inputs longer than 8 characters
-    if (value.length > 8 && !isProcessing) {
-      debounceAIProcess(value);
-    }
+  // Utility function for debouncing
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
   };
-
-  const handleInputBlur = async (e) => {
-    const value = e.target.value.trim();
-    // Process on blur if we have meaningful content and no current processing
-    if (value.length > 5 && !isProcessing && !parsedTask) {
-      await processWithAI(value, 'smart-parse');
-    }
-  };
-
-  const debounceAIProcess = debounce(async (text) => {
-    const trimmedText = text.trim();
-    // Process if we have at least 2 words
-    const words = trimmedText.split(/\s+/).filter(word => word.length > 0);
-    
-    if (words.length >= 2) {
-      await processWithAI(trimmedText, 'smart-parse');
-    }
-  }, 1200); // Longer debounce to let users finish typing
 
   const processWithAI = async (text, feature = 'smart-parse', context = {}) => {
     if (!text.trim()) return;
@@ -117,7 +89,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         }),
         signal: controller.signal,
       });
-      
+
       clearTimeout(timeoutId);
 
       if (response.ok) {
@@ -137,6 +109,48 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
       }
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const debounceAIProcess = debounce(async (text) => {
+    const trimmedText = text.trim();
+    // Process if we have at least 2 words
+    const words = trimmedText.split(/\s+/).filter((word) => word.length > 0);
+
+    if (words.length >= 2) {
+      await processWithAI(trimmedText, 'smart-parse');
+    }
+  }, 1200); // Longer debounce to let users finish typing
+
+  useEffect(() => {
+    if (isExpanded && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isExpanded]);
+
+  const handleInputChange = async (e) => {
+    const { value } = e.target;
+    setInput(value);
+
+    // Clear existing AI data when user is actively typing
+    if (parsedTask) {
+      setParsedTask(null);
+    }
+    if (aiSuggestions) {
+      setAiSuggestions(null);
+    }
+
+    // Trigger AI processing for inputs longer than 8 characters
+    if (value.length > 8 && !isProcessing) {
+      debounceAIProcess(value);
+    }
+  };
+
+  const handleInputBlur = async (e) => {
+    const value = e.target.value.trim();
+    // Process on blur if we have meaningful content and no current processing
+    if (value.length > 5 && !isProcessing && !parsedTask) {
+      await processWithAI(value, 'smart-parse');
     }
   };
 
@@ -190,8 +204,93 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
     await processWithAI(input, feature.id);
   };
 
+  const handleSuggestionToggle = (suggestion, index) => {
+    const newSelected = new Set(selectedSuggestions);
+    const suggestionId = `${index}-${suggestion}`;
+
+    if (newSelected.has(suggestionId)) {
+      newSelected.delete(suggestionId);
+    } else {
+      newSelected.add(suggestionId);
+    }
+
+    setSelectedSuggestions(newSelected);
+  };
+
+  const handleAddSelectedSuggestions = async () => {
+    if (!input.trim() || selectedSuggestions.size === 0) return;
+
+    // First add the main task
+    let mainTaskData = {
+      task: input.trim(),
+      projectId: projectId || '1',
+      date: '',
+      priority: 'medium',
+    };
+
+    // Use AI-parsed data if available for main task
+    if (parsedTask) {
+      mainTaskData = {
+        task: parsedTask.taskName || input.trim(),
+        projectId: projectId || '1',
+        date: parsedTask.date || '',
+        priority: parsedTask.priority || 'medium',
+        aiEnhanced: true,
+        metadata: {
+          originalInput: input,
+          aiParsed: parsedTask,
+        },
+      };
+    }
+
+    // Add main task first and get its ID
+    await onAddTask(mainTaskData);
+
+    // Wait a moment for the main task to be processed before adding subtasks
+    setTimeout(() => {
+      // Get the suggestions from either parsedTask or aiSuggestions
+      const suggestions =
+        parsedTask?.suggestions || aiSuggestions?.suggestions || [];
+
+      // Add each selected suggestion as a subtask
+      const subtasks = Array.from(selectedSuggestions)
+        .map((suggestionId) => {
+          const [index] = suggestionId.split('-');
+          const suggestion = suggestions[parseInt(index, 10)];
+
+          if (suggestion) {
+            return {
+              task: suggestion,
+              projectId: projectId || '1',
+              date: '',
+              priority: 'low',
+              aiEnhanced: true,
+              parentTaskId: null, // Will be handled by the parent-child relationship logic
+              metadata: {
+                parentTask: mainTaskData.task,
+                type: 'subtask',
+                aiGenerated: true,
+              },
+            };
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      // Add all subtasks in parallel
+      Promise.all(subtasks.map((subtaskData) => onAddTask(subtaskData)));
+    }, 200); // Small delay to ensure main task is created first
+
+    // Reset form
+    setInput('');
+    setParsedTask(null);
+    setAiSuggestions(null);
+    setSelectedSuggestions(new Set());
+    setIsExpanded(false);
+  };
+
   const handleSuggestionClick = async (suggestion) => {
-    // Add the main task first if not already added
+    // Single suggestion click - add as individual subtask
     if (input.trim()) {
       let mainTaskData = {
         task: input.trim(),
@@ -200,7 +299,6 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         priority: 'medium',
       };
 
-      // Use AI-parsed data if available for main task
       if (parsedTask) {
         mainTaskData = {
           task: parsedTask.taskName || input.trim(),
@@ -215,28 +313,28 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         };
       }
 
-      // Add main task
       await onAddTask(mainTaskData);
 
-      // Add suggestion as a related task
       const suggestionTaskData = {
         task: suggestion,
         projectId: projectId || '1',
         date: '',
         priority: 'low',
         aiEnhanced: true,
+        parentTaskId: null,
         metadata: {
-          relatedTo: input.trim(),
-          type: 'suggestion',
+          parentTask: mainTaskData.task,
+          type: 'subtask',
+          aiGenerated: true,
         },
       };
 
       await onAddTask(suggestionTaskData);
 
-      // Reset form
       setInput('');
       setParsedTask(null);
       setAiSuggestions(null);
+      setSelectedSuggestions(new Set());
       setIsExpanded(false);
     }
   };
@@ -303,20 +401,45 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
 
         {parsedTask.suggestions && parsedTask.suggestions.length > 0 && (
           <div className="ai-suggestions">
-            <h4>Smart Suggestions:</h4>
-            <div className="suggestions-grid">
-              {parsedTask.suggestions.map((suggestion, index) => (
+            <div className="suggestions-header">
+              <h4>Smart Suggestions:</h4>
+              {selectedSuggestions.size > 0 && (
                 <button
-                  key={index}
                   type="button"
-                  className="suggestion-btn clickable"
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  title="Click to add as related task"
+                  className="add-selected-btn"
+                  onClick={handleAddSelectedSuggestions}
+                  title={`Add ${selectedSuggestions.size} selected suggestions as subtasks`}
                 >
-                  <span className="suggestion-text">{suggestion}</span>
-                  <span className="add-icon">+</span>
+                  Add Selected ({selectedSuggestions.size})
                 </button>
-              ))}
+              )}
+            </div>
+            <div className="suggestions-grid">
+              {parsedTask.suggestions.map((suggestion, index) => {
+                const suggestionId = `${index}-${suggestion}`;
+                const isSelected = selectedSuggestions.has(suggestionId);
+                
+                return (
+                  <div key={index} className="suggestion-item-container">
+                    <input
+                      type="checkbox"
+                      id={`suggestion-${index}`}
+                      checked={isSelected}
+                      onChange={() => handleSuggestionToggle(suggestion, index)}
+                      className="suggestion-checkbox"
+                    />
+                    <label
+                      htmlFor={`suggestion-${index}`}
+                      className={`suggestion-btn clickable ${
+                        isSelected ? 'selected' : ''
+                      }`}
+                    >
+                      <span className="suggestion-text">{suggestion}</span>
+                      <span className="add-icon">{isSelected ? '✓' : '+'}</span>
+                    </label>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -409,6 +532,7 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
                 setInput('');
                 setParsedTask(null);
                 setAiSuggestions(null);
+                setSelectedSuggestions(new Set());
                 setShowAIFeatures(false);
               }}
             >
@@ -439,7 +563,9 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
               <div className="suggestion-item">
                 <FiTarget className="suggestion-icon" />
                 <span className="suggestion-label">Task:</span>
-                <span className="suggestion-value">{aiSuggestions.taskName}</span>
+                <span className="suggestion-value">
+                  {aiSuggestions.taskName}
+                </span>
               </div>
             )}
             
@@ -471,20 +597,45 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
             
             {aiSuggestions.suggestions && aiSuggestions.suggestions.length > 0 && (
               <div className="ai-recommendations">
-                <h5>Smart Recommendations:</h5>
-                <div className="suggestions-grid">
-                  {aiSuggestions.suggestions.map((suggestion, index) => (
+                <div className="recommendations-header">
+                  <h5>Smart Recommendations:</h5>
+                  {selectedSuggestions.size > 0 && (
                     <button
-                      key={index}
                       type="button"
-                      className="suggestion-btn clickable"
-                      onClick={() => handleSuggestionClick(suggestion)}
-                      title="Click to add as related task"
+                      className="add-selected-btn"
+                      onClick={handleAddSelectedSuggestions}
+                      title={`Add ${selectedSuggestions.size} selected suggestions as subtasks`}
                     >
-                      <span className="suggestion-text">{suggestion}</span>
-                      <span className="add-icon">+</span>
+                      Add Selected ({selectedSuggestions.size})
                     </button>
-                  ))}
+                  )}
+                </div>
+                <div className="suggestions-grid">
+                  {aiSuggestions.suggestions.map((suggestion, index) => {
+                    const suggestionId = `${index}-${suggestion}`;
+                    const isSelected = selectedSuggestions.has(suggestionId);
+                    
+                    return (
+                      <div key={index} className="suggestion-item-container">
+                        <input
+                          type="checkbox"
+                          id={`ai-suggestion-${index}`}
+                          checked={isSelected}
+                          onChange={() => handleSuggestionToggle(suggestion, index)}
+                          className="suggestion-checkbox"
+                        />
+                        <label
+                          htmlFor={`ai-suggestion-${index}`}
+                          className={`suggestion-btn clickable ${
+                        isSelected ? 'selected' : ''
+                      }`}
+                        >
+                          <span className="suggestion-text">{suggestion}</span>
+                          <span className="add-icon">{isSelected ? '✓' : '+'}</span>
+                        </label>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -496,17 +647,5 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
   );
 };
 
-// Utility function for debouncing
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
 
 export default SmartTaskInput;

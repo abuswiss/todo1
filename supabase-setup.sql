@@ -12,6 +12,7 @@ CREATE TABLE tasks (
     user_id TEXT DEFAULT 'demo-user',
     ai_enhanced BOOLEAN DEFAULT false,
     metadata JSONB,
+    parent_task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE, -- For subtasks
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -63,6 +64,7 @@ CREATE POLICY "Enable all operations for all users" ON projects
 CREATE INDEX idx_tasks_project_id ON tasks(project_id);
 CREATE INDEX idx_tasks_user_id ON tasks(user_id);
 CREATE INDEX idx_tasks_archived ON tasks(archived);
+CREATE INDEX idx_tasks_parent_task_id ON tasks(parent_task_id);
 CREATE INDEX idx_projects_user_id ON projects(user_id);
 
 -- Create updated_at trigger function

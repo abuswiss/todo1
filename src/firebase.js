@@ -32,6 +32,7 @@ class SupabaseQuery {
       'projectId': 'project_id',
       'userId': 'user_id',
       'aiEnhanced': 'ai_enhanced',
+      'parentTaskId': 'parent_task_id',
       'createdAt': 'created_at'
     };
     return fieldMap[field] || field;
@@ -70,6 +71,7 @@ class SupabaseQuery {
       userId: item.user_id,
       aiEnhanced: item.ai_enhanced,
       metadata: item.metadata,
+      parentTaskId: item.parent_task_id,
       createdAt: item.created_at
     };
   }

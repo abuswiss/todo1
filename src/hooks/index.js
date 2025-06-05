@@ -8,6 +8,40 @@ export const useTasks = selectedProject => {
   const [tasks, setTasks] = useState([]);
   const [archivedTasks, setArchivedTasks] = useState([]);
 
+  // Optimistic update functions
+  const addTaskOptimistic = (taskData) => {
+    const optimisticTask = {
+      id: 'temp-' + Date.now(),
+      ...taskData,
+      createdAt: new Date().toISOString(),
+      _optimistic: true
+    };
+    setTasks(prevTasks => [optimisticTask, ...prevTasks]);
+    return optimisticTask.id;
+  };
+
+  const updateTaskOptimistic = (taskId, updates) => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.id === taskId 
+          ? { ...task, ...updates, _optimistic: true }
+          : task
+      )
+    );
+  };
+
+  const deleteTaskOptimistic = (taskId) => {
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+  };
+
+  const archiveTaskOptimistic = (taskId) => {
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+  };
+
+  const revertOptimisticUpdate = (originalTasks) => {
+    setTasks(originalTasks);
+  };
+
   useEffect(() => {
     let unsubscribe = firebase
       .firestore()
@@ -48,7 +82,15 @@ export const useTasks = selectedProject => {
     return () => unsubscribe();
   }, [selectedProject]);
 
-  return { tasks, archivedTasks };
+  return { 
+    tasks, 
+    archivedTasks,
+    addTaskOptimistic,
+    updateTaskOptimistic, 
+    deleteTaskOptimistic,
+    archiveTaskOptimistic,
+    revertOptimisticUpdate
+  };
 };
 
 export const useProjects = () => {
