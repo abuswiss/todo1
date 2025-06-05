@@ -19,14 +19,14 @@ body {
   padding: 0;
   line-height: 1.6;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-  color: #ffffff;
+  color: #000000;
   background: linear-gradient(135deg, 
-    rgba(102, 126, 234, 0.03) 0%, 
-    rgba(118, 75, 162, 0.02) 25%, 
-    rgba(240, 147, 251, 0.02) 50%, 
-    rgba(245, 87, 108, 0.02) 75%, 
-    rgba(79, 172, 254, 0.03) 100%),
-    linear-gradient(45deg, #0c0d12 0%, #12161c 50%, #1a1f26 100%);
+    rgba(102, 126, 234, 0.05) 0%, 
+    rgba(118, 75, 162, 0.04) 25%, 
+    rgba(240, 147, 251, 0.04) 50%, 
+    rgba(245, 87, 108, 0.04) 75%, 
+    rgba(79, 172, 254, 0.05) 100%),
+    linear-gradient(45deg, #f8f9fa 0%, #ffffff 50%, #f5f5f7 100%);
   background-size: 400% 400%, 100% 100%;
   animation: gradientShift 30s ease infinite;
   font-smooth: always;
@@ -44,24 +44,24 @@ body {
 
 // Glassmorphism base - enhanced contrast for readability
 @mixin glassmorphic($opacity: 0.15, $blur: 15px, $border-opacity: 0.12) {
-  background: rgba(20, 24, 32, 0.85);
+  background: rgba(245, 245, 247, 0.95);
   backdrop-filter: blur($blur) saturate(120%);
   -webkit-backdrop-filter: blur($blur) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, $border-opacity);
+  border: 1px solid rgba(0, 0, 0, $border-opacity);
   box-shadow: 
-    0 4px 20px 0 rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
+    0 4px 20px 0 rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05);
 }
 
 @mixin glassmorphic-dark($opacity: 0.25, $blur: 15px) {
-  background: rgba(12, 15, 20, 0.9);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur($blur) saturate(120%);
   -webkit-backdrop-filter: blur($blur) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   box-shadow: 
-    0 4px 20px 0 rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+    0 4px 20px 0 rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 0 rgba(255, 255, 255, 1);
 }
 
 @mixin apple-button($variant: primary) {
@@ -69,8 +69,9 @@ body {
     background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
     color: white;
   } @else if $variant == secondary {
-    @include glassmorphic(0.2, 15px, 0.3);
-    color: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
   }
   
   border: none;
@@ -100,28 +101,28 @@ ul {
 $primary-gradient: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
 $secondary-gradient: linear-gradient(135deg, #30D158 0%, #32ADE6 100%);
 $accent-gradient: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
-$surface-glass: rgba(20, 24, 32, 0.85);
-$surface-glass-dark: rgba(12, 15, 20, 0.9);
-$border-glass: rgba(255, 255, 255, 0.2);
-$text-primary: #ffffff;
-$text-secondary: rgba(255, 255, 255, 0.85);
-$shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-$shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.3);
+$surface-glass: rgba(255, 255, 255, 0.95);
+$surface-glass-dark: rgba(249, 249, 249, 0.98);
+$border-glass: rgba(0, 0, 0, 0.1);
+$text-primary: #000000;
+$text-secondary: rgba(0, 0, 0, 0.7);
+$shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+$shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.12);
 
 /* Mixins - Glassmorphic Design System
   ============================================ */
 @mixin glass-overlay() {
-  background: rgba(20, 24, 32, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(25px) saturate(120%);
   -webkit-backdrop-filter: blur(25px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   position: absolute;
   width: 100%;
   z-index: 1000;
   top: 85px;
   border-radius: 20px;
   animation: slideDown 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 @keyframes slideDown {
@@ -191,12 +192,12 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.3);
 
 @mixin box-overlay() {
   position: absolute;
-  background: rgba(20, 24, 32, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px) saturate(120%);
   -webkit-backdrop-filter: blur(20px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 @mixin task-item() {
@@ -208,20 +209,20 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.3);
   padding: 12px 16px;
   margin: 4px 0;
   font-size: 14px;
-  background: rgba(20, 24, 32, 0.85);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(15px) saturate(120%);
   -webkit-backdrop-filter: blur(15px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
   
   &:hover {
-    background: rgba(20, 24, 32, 0.95);
-    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(0, 0, 0, 0.15);
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   }
 }
 
@@ -233,7 +234,7 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 @mixin cancel() {
-  color: #555;
+  color: rgba(0, 0, 0, 0.6);
   cursor: pointer;
   font-size: 14px;
   margin: 2px 5px;
@@ -253,18 +254,18 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.3);
   padding: 16px 20px;
   margin: 8px 0;
   font-size: 15px;
-  background: rgba(20, 24, 32, 0.85);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(15px) saturate(120%);
   -webkit-backdrop-filter: blur(15px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
   
   &:hover {
-    background: rgba(20, 24, 32, 0.95);
-    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
     box-shadow: $shadow-elevated;
   }
@@ -294,18 +295,18 @@ $shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.3);
 /* Header - Enhanced Contrast Design
   ============================================ */
 header {
-  background: rgba(16, 20, 28, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px) saturate(120%);
   -webkit-backdrop-filter: blur(20px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   height: 70px;
   z-index: 1000;
   position: fixed;
   top: 0;
   width: 100%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   
   @include mq('900px') {
     padding: 0 20px;
@@ -345,10 +346,7 @@ header {
         span {
           font-size: 20px;
           font-weight: 700;
-          background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: #000000;
         }
       }
 
@@ -373,16 +371,16 @@ header {
           vertical-align: middle;
           border-radius: 12px;
           transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          background: rgba(20, 24, 32, 0.7);
+          background: rgba(0, 0, 0, 0.04);
           backdrop-filter: blur(10px) saturate(120%);
           -webkit-backdrop-filter: blur(10px) saturate(120%);
-          border: 1px solid rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(0, 0, 0, 0.06);
 
           &:hover {
-            background: rgba(20, 24, 32, 0.9);
-            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(0, 0, 0, 0.08);
+            border-color: rgba(0, 0, 0, 0.12);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
           }
 
           &.settings__add {
@@ -402,7 +400,7 @@ header {
               transition: all 0.3s ease;
               
               &:hover {
-                color: white;
+                color: #007AFF;
                 transform: rotate(90deg);
               }
             }
@@ -452,12 +450,12 @@ header {
   position: fixed;
   overflow-x: hidden;
   overflow-y: auto;
-  background: rgba(16, 20, 28, 0.9);
+  background: rgba(249, 249, 249, 0.98);
   backdrop-filter: blur(20px) saturate(120%);
   -webkit-backdrop-filter: blur(20px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-right: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
   z-index: 100;
   
   /* Custom scrollbar */
@@ -470,11 +468,11 @@ header {
   }
   
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
     
     &:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.3);
     }
   }
 
@@ -487,6 +485,7 @@ header {
       display: -webkit-box;
       display: -ms-flexbox;
       display: flex;
+      opacity: 1;
     }
   }
 
@@ -510,33 +509,32 @@ header {
       display: none;
 
       svg {
-        color: #cacaca;
+        color: rgba(0, 0, 0, 0.4);
       }
     }
 
     &.active, &:hover {
       font-weight: 600;
-      background: rgba(20, 24, 32, 0.9);
+      background: rgba(0, 0, 0, 0.04);
       backdrop-filter: blur(15px) saturate(120%);
       -webkit-backdrop-filter: blur(15px) saturate(120%);
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(0, 0, 0, 0.08);
       transform: translateX(4px);
-      color: white;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      color: #000000;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
       
       .sidebar__dot {
         transform: scale(1.1);
-        filter: brightness(1.2);
+        filter: brightness(1.1);
       }
     }
     
     &.active {
-      background: rgba(20, 24, 32, 0.95);
-      border: 2px solid;
-      border-image: linear-gradient(135deg, #007AFF, #5856D6) 1;
+      background: rgba(0, 122, 255, 0.08);
+      border: 1px solid rgba(0, 122, 255, 0.2);
       box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 4px 16px rgba(0, 122, 255, 0.1),
+        inset 0 1px 0 rgba(0, 122, 255, 0.1);
     }
 
     &:nth-child(1) {
@@ -590,7 +588,7 @@ header {
     transition: all 0.3s ease;
 
     span {
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(0, 0, 0, 0.5);
       margin-right: 12px;
       transition: all 0.3s ease;
 
@@ -605,14 +603,14 @@ header {
     
     &:hover {
       span {
-        color: rgba(255, 255, 255, 0.9);
+        color: rgba(0, 0, 0, 0.8);
         transform: scale(1.1);
       }
     }
 
     h2 {
       margin: 0;
-      color: $text-primary;
+      color: #000000;
       font-size: 16px;
       font-weight: 600;
       padding-bottom: 0;
@@ -652,7 +650,7 @@ header {
           svg {
             width: 20px;
             height: 20px;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(0, 0, 0, 0.6);
             transition: all 0.3s ease;
           }
         }
@@ -660,24 +658,24 @@ header {
 
       &.active, &:hover {
         font-weight: 600;
-        background: rgba(20, 24, 32, 0.9);
+        background: rgba(0, 0, 0, 0.04);
         backdrop-filter: blur(15px) saturate(120%);
         -webkit-backdrop-filter: blur(15px) saturate(120%);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        color: #000000;
         transform: translateX(4px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
         
         div:nth-child(1) span:first-of-type svg {
-          color: white;
+          color: #007AFF;
           transform: scale(1.1);
         }
       }
       
       &.active {
-        background: rgba(20, 24, 32, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        background: rgba(0, 122, 255, 0.08);
+        border: 1px solid rgba(0, 122, 255, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 122, 255, 0.1);
       }
     }
   }
@@ -732,18 +730,18 @@ header {
 .tasks {
   width: calc(100vw - 320px);
   max-width: 800px;
-  background: rgba(20, 24, 32, 0.9);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px) saturate(120%);
   -webkit-backdrop-filter: blur(20px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   margin-left: 320px;
   min-height: calc(100vh - 90px);
   padding: 32px 40px;
   margin-top: 90px;
   border-radius: 24px;
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 8px 32px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   position: relative;
   
   &::before {
@@ -772,11 +770,7 @@ header {
     font-size: 28px;
     font-weight: 700;
     margin: 0 0 32px 0;
-    color: $text-primary;
-    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #000000;
     letter-spacing: -0.5px;
     line-height: 1.2;
   }
@@ -801,7 +795,7 @@ header {
       .toggle-btn {
         border: none;
         background: transparent;
-        color: $text-secondary;
+        color: rgba(0, 0, 0, 0.6);
         padding: 8px 16px;
         border-radius: 8px;
         font-size: 14px;
@@ -813,14 +807,14 @@ header {
         gap: 6px;
         
         &.active {
-          @include glassmorphic(0.3, 10px, 0.3);
-          color: $text-primary;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          background: rgba(0, 122, 255, 0.1);
+          color: #007AFF;
+          box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15);
         }
         
         &:hover:not(.active) {
-          color: $text-primary;
-          background: rgba(255, 255, 255, 0.1);
+          color: #000000;
+          background: rgba(0, 0, 0, 0.05);
         }
       }
     }
@@ -829,15 +823,16 @@ header {
   .empty-state {
     text-align: center;
     padding: 60px 40px;
-    color: $text-secondary;
+    color: rgba(0, 0, 0, 0.6);
     
     svg {
       margin-bottom: 24px;
-      opacity: 0.5;
+      opacity: 0.3;
+      color: rgba(0, 0, 0, 0.4);
     }
     
     h3 {
-      color: $text-primary;
+      color: #000000;
       font-size: 24px;
       font-weight: 600;
       margin-bottom: 12px;
@@ -920,17 +915,17 @@ header {
           display: flex;
           align-items: center;
           justify-content: center;
-          border: 2px solid rgba(255, 255, 255, 0.4);
+          border: 2px solid rgba(0, 0, 0, 0.25);
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 1);
           transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
           backdrop-filter: blur(10px);
           
           &:hover {
-            border-color: rgba(255, 255, 255, 0.8);
-            background: rgba(255, 255, 255, 0.2);
+            border-color: #007AFF;
+            background: rgba(0, 122, 255, 0.05);
             transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15);
           }
           
           &.checked {
@@ -969,9 +964,8 @@ header {
             font-size: 12px;
             padding: 4px 8px;
             border-radius: 6px;
-            @include glassmorphic(0.2, 10px, 0.3);
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
+            color: white;
+            font-weight: 600;
           }
           
           .task-priority {
@@ -992,10 +986,10 @@ header {
         button {
           width: 32px;
           height: 32px;
-          border: none;
+          border: 1px solid rgba(0, 0, 0, 0.1);
           border-radius: 8px;
-          @include glassmorphic(0.2, 10px, 0.3);
-          color: rgba(255, 255, 255, 0.8);
+          background: rgba(0, 0, 0, 0.04);
+          color: rgba(0, 0, 0, 0.6);
           cursor: pointer;
           display: flex;
           align-items: center;
@@ -1003,8 +997,8 @@ header {
           transition: all 0.3s ease;
           
           &:hover {
-            @include glassmorphic(0.3, 15px, 0.4);
-            color: white;
+            background: rgba(0, 0, 0, 0.08);
+            color: #000000;
             transform: scale(1.1);
           }
         }
@@ -1117,10 +1111,10 @@ header {
   margin: 24px 0;
   
   .expand-button {
-    background: rgba(20, 24, 32, 0.8);
+    background: rgba(0, 0, 0, 0.03);
     backdrop-filter: blur(15px) saturate(120%);
     -webkit-backdrop-filter: blur(15px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 16px;
     padding: 16px 24px;
     width: 100%;
@@ -1129,35 +1123,34 @@ header {
     gap: 12px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    color: $text-secondary;
+    color: rgba(0, 0, 0, 0.6);
     font-size: 15px;
     font-weight: 500;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     
     .plus-icon {
-      color: $text-primary;
+      color: #007AFF;
       font-size: 18px;
       transition: all 0.3s ease;
     }
     
     .ai-badge {
       margin-left: auto;
-      color: #FFD60A;
+      color: #FF9500;
       font-size: 16px;
       animation: sparkle 2s ease-in-out infinite;
     }
     
     &:hover {
-      background: rgba(20, 24, 32, 0.95);
-      border: 2px solid;
-      border-image: linear-gradient(135deg, #FFD60A, #FF9500) 1;
-      color: $text-primary;
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(255, 149, 0, 0.3);
+      color: #000000;
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 16px rgba(255, 149, 0, 0.1);
       
       .plus-icon {
         transform: rotate(90deg);
-        color: white;
+        color: #FF9500;
       }
     }
   }
@@ -1177,24 +1170,23 @@ header {
       gap: 16px;
       
       .smart-input {
-        @include glassmorphic(0.1, 10px, 0.2);
-        border: none;
+        border: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: 12px;
         padding: 16px 20px;
         font-size: 16px;
-        color: $text-primary;
-        background: rgba(255, 255, 255, 0.1);
+        color: #000000;
+        background: rgba(255, 255, 255, 1);
         backdrop-filter: blur(10px);
         transition: all 0.3s ease;
         
         &::placeholder {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(0, 0, 0, 0.4);
         }
         
         &:focus {
           outline: none;
-          @include glassmorphic(0.2, 15px, 0.3);
-          box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.5);
+          border-color: #007AFF;
+          box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
       }
       
@@ -1255,24 +1247,26 @@ header {
   align-items: center;
   gap: 12px;
   padding: 16px;
-  @include glassmorphic(0.15, 15px, 0.2);
+  background: rgba(255, 149, 0, 0.05);
+  border: 1px solid rgba(255, 149, 0, 0.15);
   border-radius: 12px;
   margin: 16px 0;
   
   .processing-icon {
-    color: #FFD60A;
+    color: #FF9500;
     font-size: 16px;
     animation: spin 1s linear infinite;
   }
   
   span {
-    color: $text-secondary;
+    color: rgba(0, 0, 0, 0.7);
     font-size: 14px;
   }
 }
 
 .ai-parsed-preview {
-  @include glassmorphic(0.2, 15px, 0.25);
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 20px;
   margin: 16px 0;
@@ -1284,20 +1278,20 @@ header {
     margin-bottom: 16px;
     
     .ai-icon {
-      color: #FFD60A;
+      color: #FF9500;
       font-size: 16px;
     }
     
     span:first-of-type {
       font-weight: 600;
-      color: $text-primary;
+      color: #000000;
     }
     
     .confidence {
       margin-left: auto;
       font-size: 12px;
-      color: $text-secondary;
-      @include glassmorphic(0.2, 10px, 0.3);
+      color: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 122, 255, 0.1);
       padding: 4px 8px;
       border-radius: 6px;
     }
@@ -1445,7 +1439,8 @@ header {
 
 .ai-suggestions-panel {
   margin: 20px 0;
-  @include glassmorphic(0.2, 15px, 0.25);
+  background: rgba(255, 149, 0, 0.03);
+  border: 1px solid rgba(255, 149, 0, 0.1);
   border-radius: 16px;
   padding: 20px;
   
@@ -1456,12 +1451,12 @@ header {
     margin-bottom: 16px;
     
     .ai-icon {
-      color: #FFD60A;
+      color: #FF9500;
       font-size: 16px;
     }
     
     h4 {
-      color: $text-primary;
+      color: #000000;
       margin: 0;
       font-size: 16px;
       font-weight: 600;
@@ -1606,13 +1601,13 @@ header {
 }
 
 .add-task__plus, .add-project__plus {
-  color: #dd4b39;
+  color: #007AFF;
   font-size: 18px;
 }
 
 .add-task__text, .add-project__text {
   display: inline-block;
-  color: #545454;
+  color: rgba(0, 0, 0, 0.7);
   font-size: 14px;
   margin-left: 15px;
 }
@@ -1762,19 +1757,18 @@ header {
   z-index: 2000;
   width: 420px;
   max-height: 600px;
-  background: rgba(16, 20, 28, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(25px) saturate(120%);
   -webkit-backdrop-filter: blur(25px) saturate(120%);
-  border: 2px solid;
-  border-image: linear-gradient(135deg, #007AFF, #5856D6, #FFD60A) 1;
+  border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.6),
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   
   @include mq('900px') {
@@ -1797,12 +1791,12 @@ header {
   }
   
   .chat-header {
-    background: rgba(12, 15, 20, 0.9);
+    background: rgba(249, 249, 249, 1);
     backdrop-filter: blur(15px) saturate(120%);
     -webkit-backdrop-filter: blur(15px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: none;
     padding: 20px 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1822,11 +1816,7 @@ header {
         margin: 0;
         font-size: 16px;
         font-weight: 700;
-        color: $text-primary;
-        background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: #000000;
       }
       
       .powered-by {
@@ -1842,8 +1832,8 @@ header {
       gap: 8px;
       
       .header-btn {
-        @include glassmorphic(0.15, 10px, 0.2);
-        border: none;
+        background: rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.06);
         border-radius: 8px;
         width: 32px;
         height: 32px;
@@ -1852,16 +1842,17 @@ header {
         justify-content: center;
         cursor: pointer;
         transition: all 0.3s ease;
-        color: $text-secondary;
+        color: rgba(0, 0, 0, 0.6);
         
         &:hover {
-          @include glassmorphic(0.25, 15px, 0.3);
-          color: $text-primary;
+          background: rgba(0, 0, 0, 0.08);
+          color: #000000;
           transform: scale(1.05);
         }
         
         &.close-btn:hover {
-          color: #FF6B6B;
+          color: #FF3B30;
+          background: rgba(255, 59, 48, 0.1);
         }
       }
     }
@@ -1886,11 +1877,11 @@ header {
     }
     
     &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
       border-radius: 3px;
       
       &:hover {
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(0, 0, 0, 0.3);
       }
     }
     
@@ -1943,13 +1934,14 @@ header {
           }
           
           .message-text {
-            @include glassmorphic(0.15, 15px, 0.2);
+            background: rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
             padding: 12px 16px;
             border-radius: 4px 16px 16px 16px;
             max-width: 280px;
             font-size: 14px;
             line-height: 1.5;
-            color: $text-primary;
+            color: #000000;
             word-wrap: break-word;
             position: relative;
             
@@ -2015,20 +2007,21 @@ header {
       gap: 8px;
       
       .suggestion-btn {
-        @include glassmorphic(0.1, 10px, 0.2);
-        border: none;
+        background: rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.06);
         border-radius: 12px;
         padding: 12px 16px;
         text-align: left;
         font-size: 13px;
-        color: $text-secondary;
+        color: rgba(0, 0, 0, 0.7);
         cursor: pointer;
         transition: all 0.3s ease;
         line-height: 1.3;
         
         &:hover {
-          @include glassmorphic(0.2, 15px, 0.3);
-          color: $text-primary;
+          background: rgba(0, 0, 0, 0.05);
+          border-color: rgba(0, 0, 0, 0.1);
+          color: #000000;
           transform: translateY(-1px);
         }
       }
@@ -2046,13 +2039,12 @@ header {
       
       .chat-input {
         flex: 1;
-        @include glassmorphic(0.15, 15px, 0.2);
-        border: none;
+        border: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: 12px;
         padding: 12px 16px;
         font-size: 14px;
-        color: $text-primary;
-        background: rgba(255, 255, 255, 0.1);
+        color: #000000;
+        background: rgba(255, 255, 255, 1);
         backdrop-filter: blur(15px);
         transition: all 0.3s ease;
         resize: none;
@@ -2060,13 +2052,13 @@ header {
         max-height: 100px;
         
         &::placeholder {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(0, 0, 0, 0.4);
         }
         
         &:focus {
           outline: none;
-          @include glassmorphic(0.25, 20px, 0.3);
-          box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.5);
+          border-color: #007AFF;
+          box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
         
         &:disabled {
