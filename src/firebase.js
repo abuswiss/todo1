@@ -16,8 +16,19 @@ class SupabaseQuery {
     this.orderByDirection = 'asc';
   }
 
+  // Convert camelCase field names to snake_case for database
+  convertFieldName(field) {
+    const fieldMap = {
+      'projectId': 'project_id',
+      'userId': 'user_id',
+      'aiEnhanced': 'ai_enhanced',
+      'createdAt': 'created_at'
+    };
+    return fieldMap[field] || field;
+  }
+
   where(field, operator, value) {
-    this.filters.push({ field, operator, value });
+    this.filters.push({ field: this.convertFieldName(field), operator, value });
     return this;
   }
 
@@ -25,6 +36,22 @@ class SupabaseQuery {
     this.orderByField = field;
     this.orderByDirection = direction;
     return this;
+  }
+
+  // Convert snake_case back to camelCase for app
+  convertDataFromDb(item) {
+    return {
+      id: item.id,
+      task: item.task,
+      projectId: item.project_id,
+      date: item.date,
+      priority: item.priority,
+      archived: item.archived,
+      userId: item.user_id,
+      aiEnhanced: item.ai_enhanced,
+      metadata: item.metadata,
+      createdAt: item.created_at
+    };
   }
 
   async get() {
@@ -58,7 +85,7 @@ class SupabaseQuery {
 
     // Apply ordering
     if (this.orderByField) {
-      query = query.order(this.orderByField, { ascending: this.orderByDirection === 'asc' });
+      query = query.order(this.convertFieldName(this.orderByField), { ascending: this.orderByDirection === 'asc' });
     }
 
     const { data, error } = await query;
@@ -67,7 +94,7 @@ class SupabaseQuery {
     return {
       docs: (data || []).map((item) => ({
         id: item.id,
-        data: () => item,
+        data: () => this.convertDataFromDb(item),
       })),
     };
   }
@@ -100,9 +127,22 @@ const firebase = {
   firestore: () => ({
     collection: (collectionName) => ({
       add: async (data) => {
+        // Convert camelCase to snake_case for database
+        const dbData = {
+          task: data.task,
+          project_id: data.projectId,
+          date: data.date,
+          priority: data.priority,
+          archived: data.archived,
+          user_id: data.userId,
+          ai_enhanced: data.aiEnhanced,
+          metadata: data.metadata,
+          created_at: new Date().toISOString()
+        };
+
         const { data: result, error } = await supabase
           .from(collectionName)
-          .insert([{ ...data, created_at: new Date().toISOString() }])
+          .insert([dbData])
           .select()
           .single();
 

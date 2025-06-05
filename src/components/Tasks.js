@@ -55,7 +55,7 @@ export const Tasks = () => {
           task: taskData.task,
           date: collatedDate || taskData.date || '',
           priority: taskData.priority || 'medium',
-          userId: 'jlIFXIwyAL3tzHMtzRbw',
+          userId: 'demo-user',
           aiEnhanced: taskData.aiEnhanced || false,
           metadata: taskData.metadata || {},
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
