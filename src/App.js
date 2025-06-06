@@ -8,7 +8,6 @@ import { NotificationProvider } from './context/notification-context';
 import { Auth } from './components/Auth';
 import { NotificationContainer } from './components/NotificationContainer';
 import PerplexityChat from './components/PerplexityChat';
-import './styles/main.scss';
 
 const AppContent = ({ darkMode, setDarkMode }) => {
   const { user, loading } = useAuth();
