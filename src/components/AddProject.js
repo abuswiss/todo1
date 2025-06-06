@@ -15,14 +15,14 @@ export const AddProject = ({ shouldShow = false }) => {
 
   const addProject = async () => {
     if (!projectName) return;
-    
+
     try {
       await projectsService.createProject({
         id: projectId,
         name: projectName,
         userId: user?.id,
       });
-      
+
       setProjects([...projects]);
       setProjectName('');
       setShow(false);
