@@ -189,3 +189,101 @@
     @content;
   }
 }
+
+// Transition mixin
+@mixin transition($properties: all, $duration: $transition-normal, $easing: ease-in-out) {
+  transition: $properties $duration $easing;
+}
+
+// Interactive element mixin
+@mixin interactive-element() {
+  @include glassmorphic();
+  @include transition(all);
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+// Standard input mixin
+@mixin standard-input() {
+  @include glassmorphic(0.05, 10px, 0.08);
+  border: 1px solid $border-light;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-base;
+  color: $text-primary;
+  @include transition(border-color, box-shadow);
+  
+  &::placeholder {
+    color: $text-tertiary;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+  }
+}
+
+// Primary button mixin
+@mixin primary-button() {
+  @include transparent-button();
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  color: white;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-lg;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-sm;
+  @include transition(all);
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba($color-primary, 0.4);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+// Ghost button mixin
+@mixin ghost-button() {
+  @include transparent-button();
+  background: transparent;
+  color: $text-secondary;
+  border: 1px solid $border-light;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-lg;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-sm;
+  @include transition(all);
+  
+  &:hover {
+    background: $bg-tertiary;
+    color: $text-primary;
+    border-color: $text-tertiary;
+  }
+}
+
+// Icon button mixin
+@mixin icon-button() {
+  @include transparent-button();
+  @include glassmorphic(0.02, 8px, 0.05);
+  border-radius: $radius-md;
+  padding: $spacing-xs;
+  @include transition(all);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background: $bg-tertiary;
+    transform: scale(1.05);
+  }
+}
