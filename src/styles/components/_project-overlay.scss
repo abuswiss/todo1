@@ -1,0 +1,44 @@
+/* ==========================================================================
+   PROJECT OVERLAY COMPONENT
+   ========================================================================== */
+
+.project-overlay {
+  @include glassmorphic();
+  @include transition(all);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 200px;
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+  
+  .project-overlay__list {
+    list-style: none;
+    margin: 0;
+    padding: $spacing-xs;
+    
+    .project-overlay__item {
+      padding: $spacing-sm $spacing-md;
+      border-radius: $radius-sm;
+      cursor: pointer;
+      @include transition(all);
+      
+      &:hover {
+        background: $bg-tertiary;
+      }
+      
+      &:active {
+        background: rgba($color-primary, 0.1);
+        color: $color-primary;
+      }
+      
+      .project-overlay__text {
+        font-size: $font-size-sm;
+        color: $text-primary;
+      }
+    }
+  }
+}

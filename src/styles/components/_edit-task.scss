@@ -1,0 +1,86 @@
+/* ==========================================================================
+   EDIT TASK COMPONENT
+   ========================================================================== */
+
+.edit-task-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg;
+}
+
+.edit-task-modal {
+  @include glassmorphic();
+  width: 100%;
+  max-width: 500px;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-xl;
+}
+
+.edit-task-header {
+  @include glassmorphic(0.08, 10px, 0.1);
+  padding: $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid $border-light;
+  
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+  }
+  
+  .close-btn {
+    @include icon-button();
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    
+    &:hover {
+      background: rgba($color-error, 0.1);
+      color: $color-error;
+    }
+  }
+}
+
+.edit-task-content {
+  padding: $spacing-lg;
+  
+  .edit-task-input {
+    width: 100%;
+    padding: $spacing-md $spacing-lg;
+    @include standard-input();
+    font-size: $font-size-base;
+    margin-bottom: $spacing-lg;
+  }
+  
+  .edit-task-actions {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: flex-end;
+    
+    .save-btn {
+      @include primary-button();
+      
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+    
+    .cancel-btn {
+      @include ghost-button();
+    }
+  }
+}

@@ -1,0 +1,318 @@
+/* ==========================================================================
+   PERPLEXITY CHAT COMPONENT
+   AI chat assistant integration
+   ========================================================================== */
+
+.perplexity-chat-trigger {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  @include glassmorphic();
+  width: 60px;
+  height: 60px;
+  border-radius: $radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  @include transition(all);
+  z-index: 100;
+  box-shadow: $shadow-lg;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: $shadow-xl;
+    background: linear-gradient(135deg, 
+      rgba($color-primary, 0.15) 0%, 
+      rgba($color-primary-dark, 0.20) 100%);
+  }
+  
+  .trigger-icon {
+    font-size: 24px;
+    color: $color-primary;
+  }
+  
+  .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: $color-error;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: $radius-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    box-shadow: 0 2px 8px rgba($color-error, 0.3);
+  }
+}
+
+.perplexity-chat {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 400px;
+  height: 600px;
+  @include glassmorphic();
+  border-radius: $radius-xl;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  box-shadow: $shadow-xl;
+  overflow: hidden;
+  
+  &-header {
+    @include glassmorphic(0.08, 10px, 0.1);
+    padding: $spacing-md $spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid $border-light;
+    
+    h3 {
+      margin: 0;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      
+      .chat-icon {
+        color: $color-primary;
+      }
+    }
+    
+    .close-btn {
+      @include icon-button();
+      
+      &:hover {
+        background: rgba($color-error, 0.1);
+        color: $color-error;
+      }
+    }
+  }
+  
+  &-task-context {
+    @include glassmorphic(0.02, 8px, 0.05);
+    margin: $spacing-sm $spacing-md;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-md;
+    background: rgba($color-info, 0.05);
+    border: 1px solid rgba($color-info, 0.2);
+    
+    .context-header {
+      font-size: $font-size-xs;
+      color: $color-info-dark;
+      font-weight: $font-weight-medium;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .context-task {
+      font-size: $font-size-sm;
+      color: $text-primary;
+      margin: 0;
+    }
+  }
+  
+  &-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba($text-tertiary, 0.3);
+      border-radius: 3px;
+      
+      &:hover {
+        background: rgba($text-tertiary, 0.5);
+      }
+    }
+  }
+  
+  &-message {
+    display: flex;
+    gap: $spacing-sm;
+    
+    &.user {
+      flex-direction: row-reverse;
+      
+      .message-bubble {
+        background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+        color: white;
+        border-bottom-right-radius: 4px;
+      }
+    }
+    
+    &.assistant {
+      .message-bubble {
+        @include glassmorphic(0.05, 10px, 0.08);
+        border-bottom-left-radius: 4px;
+      }
+    }
+    
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: $radius-full;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 14px;
+      
+      &.user-avatar {
+        background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+        color: white;
+      }
+      
+      &.assistant-avatar {
+        @include glassmorphic(0.08, 10px, 0.1);
+        color: $color-primary;
+      }
+    }
+    
+    .message-bubble {
+      max-width: 85%;
+      padding: $spacing-sm $spacing-md;
+      border-radius: $radius-lg;
+      font-size: $font-size-sm;
+      line-height: 1.5;
+      word-wrap: break-word;
+      
+      code {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 0.9em;
+      }
+      
+      pre {
+        background: rgba(0, 0, 0, 0.1);
+        padding: $spacing-sm;
+        border-radius: $radius-md;
+        overflow-x: auto;
+        margin: $spacing-sm 0;
+        
+        code {
+          background: none;
+          padding: 0;
+        }
+      }
+    }
+    
+    .message-loading {
+      display: flex;
+      gap: 4px;
+      padding: $spacing-sm;
+      
+      span {
+        width: 8px;
+        height: 8px;
+        border-radius: $radius-full;
+        background: $text-tertiary;
+        animation: bounce 1.4s ease-in-out infinite;
+        
+        &:nth-child(1) { animation-delay: -0.32s; }
+        &:nth-child(2) { animation-delay: -0.16s; }
+      }
+    }
+  }
+  
+  &-input-form {
+    @include glassmorphic(0.08, 10px, 0.1);
+    padding: $spacing-md;
+    border-top: 1px solid $border-light;
+    
+    form {
+      display: flex;
+      gap: $spacing-sm;
+      
+      input {
+        flex: 1;
+        @include standard-input();
+        padding-right: 40px;
+      }
+      
+      button {
+        @include primary-button();
+        padding: $spacing-sm $spacing-md;
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+      }
+    }
+  }
+  
+  &-error {
+    @include glassmorphic(0.05, 10px, 0.08);
+    background: rgba($color-error, 0.05);
+    border: 1px solid rgba($color-error, 0.2);
+    padding: $spacing-sm $spacing-md;
+    margin: $spacing-sm $spacing-md;
+    border-radius: $radius-md;
+    color: $color-error-dark;
+    font-size: $font-size-sm;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    
+    .error-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+  .perplexity-chat {
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+    border-radius: 0;
+    max-width: none;
+  }
+  
+  .perplexity-chat-trigger {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    
+    .trigger-icon {
+      font-size: 20px;
+    }
+  }
+}

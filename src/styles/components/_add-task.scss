@@ -1,0 +1,98 @@
+/* ==========================================================================
+   ADD TASK COMPONENT
+   ========================================================================== */
+
+.add-task {
+  margin-top: 20px;
+
+  &__shallow, .add-project {
+    @include interactive-element();
+    margin-bottom: 20px;
+  }
+
+  &__plus, .add-project__plus {
+    color: $color-primary;
+    font-size: 18px;
+  }
+
+  &__text, .add-project__text {
+    display: inline-block;
+    color: $text-secondary;
+    font-size: 14px;
+    margin-left: 15px;
+  }
+
+  &__main {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  &__overlay {
+    .add-task__main {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      @include glassmorphic();
+      z-index: 2000;
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
+    }
+  }
+
+  &__header {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+  }
+
+  &__cancel-x {
+    cursor: pointer;
+    color: $text-tertiary;
+    font-weight: bold;
+    font-size: 18px;
+    float: right;
+  }
+
+  &__content {
+    width: 100%;
+    @include standard-input();
+  }
+
+  &__submit {
+    @include primary-button();
+    margin-top: 10px;
+  }
+
+  &__cancel {
+    @include ghost-button();
+    margin-left: 10px;
+  }
+
+  &__project, &__date {
+    float: right;
+    color: $text-tertiary;
+    cursor: pointer;
+    margin: 20px 10px;
+  }
+}
+
+.add-project {
+  &__input {
+    margin-bottom: 20px;
+  }
+
+  &__name {
+    width: 100%;
+    @include standard-input();
+  }
+
+  &__submit {
+    @include primary-button();
+  }
+
+  &__cancel {
+    @include ghost-button();
+    margin-left: 10px;
+  }
+}

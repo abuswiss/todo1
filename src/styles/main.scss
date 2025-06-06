@@ -18,13 +18,12 @@
 @import 'components/checkbox';
 @import 'components/tasks';
 @import 'components/notifications';
-
-// Additional component imports can be added here as needed
-// @import 'components/smart-task-input';
-// @import 'components/add-task';
-// @import 'components/perplexity-chat';
-// @import 'components/project-overlay';
-// @import 'components/task-date';
+@import 'components/smart-task-input';
+@import 'components/add-task';
+@import 'components/perplexity-chat';
+@import 'components/project-overlay';
+@import 'components/task-date';
+@import 'components/edit-task';
 
 /* ==========================================================================
    DARK MODE STYLES
