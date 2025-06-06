@@ -8,7 +8,7 @@ import { getTitle, getCollatedTitle, collatedTasksExist } from '../helpers';
 import { useSelectedProjectValue, useProjectsValue } from '../context';
 import { useAuth } from '../context/auth-context';
 import { useNotifications } from '../context/notification-context';
-import { tasksService } from '../lib/supabase-native';
+import { tasksService } from '../lib/supabase-native-fixed';
 import moment from 'moment';
 import { FiZap, FiList, FiClock, FiUser, FiTag, FiEdit2, FiTrash2 } from 'react-icons/fi';
 

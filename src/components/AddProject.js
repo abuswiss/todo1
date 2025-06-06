@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { projectsService } from '../lib/supabase-native';
+import { projectsService } from '../lib/supabase-native-fixed';
 import { generatePushId } from '../helpers';
 import { useProjectsValue } from '../context';
 import { useAuth } from '../context/auth-context';

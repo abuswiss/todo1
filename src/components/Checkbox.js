@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { tasksService } from '../lib/supabase-native';
+import { tasksService } from '../lib/supabase-native-fixed';
 import { useNotifications } from '../context/notification-context';
 
 export const Checkbox = ({ id, taskDesc, onOptimisticArchive }) => {

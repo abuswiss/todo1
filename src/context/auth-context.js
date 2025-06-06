@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { authService } from '../lib/supabase-native';
+import { authService } from '../lib/supabase-native-fixed';
 
 const AuthContext = createContext({});
 

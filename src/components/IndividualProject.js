@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import { useProjectsValue, useSelectedProjectValue } from '../context';
-import { projectsService } from '../lib/supabase-native';
+import { projectsService } from '../lib/supabase-native-fixed';
 
 export const IndividualProject = ({ project }) => {
   const [showConfirm, setShowConfirm] = useState(false);

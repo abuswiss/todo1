@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaRegListAlt, FaRegCalendarAlt } from 'react-icons/fa';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { tasksService } from '../lib/supabase-native';
+import { tasksService } from '../lib/supabase-native-fixed';
 import { useSelectedProjectValue } from '../context';
 import { useAuth } from '../context/auth-context';
 import { ProjectOverlay } from './ProjectOverlay';
