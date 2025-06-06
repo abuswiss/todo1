@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { FaRegListAlt, FaRegCalendarAlt } from 'react-icons/fa';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { firebase } from '../firebase';
+import { tasksService } from '../lib/supabase-native';
 import { useSelectedProjectValue } from '../context';
+import { useAuth } from '../context/auth-context';
 import { ProjectOverlay } from './ProjectOverlay';
 import { TaskDate } from './TaskDate';
 
@@ -21,6 +22,7 @@ export const AddTask = ({
   const [showTaskDate, setShowTaskDate] = useState(false);
 
   const { selectedProject } = useSelectedProjectValue();
+  const { user } = useAuth();
 
   const addTask = () => {
     const projectId = project || selectedProject;
@@ -32,26 +34,30 @@ export const AddTask = ({
       collatedDate = moment().add(7, 'days').format('DD/MM/YYYY');
     }
 
-    return (
-      task &&
-      projectId &&
-      firebase
-        .firestore()
-        .collection('tasks')
-        .add({
-          archived: false,
-          projectId,
-          task,
-          date: collatedDate || taskDate,
-          userId: 'jlIFXIwyAL3tzHMtzRbw',
-        })
-        .then(() => {
-          setTask('');
-          setProject('');
-          setShowMain('');
-          setShowProjectOverlay(false);
-        })
-    );
+    if (!task || !projectId || !user) return;
+
+    const taskData = {
+      archived: false,
+      projectId,
+      task,
+      date: collatedDate || taskDate,
+      userId: user.id,
+      priority: 'medium',
+      aiEnhanced: false,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+    };
+
+    return tasksService.createTask(taskData)
+      .then(() => {
+        setTask('');
+        setProject('');
+        setShowMain('');
+        setShowProjectOverlay(false);
+      })
+      .catch(error => {
+        console.error('Error adding task:', error);
+      });
   };
 
   return (

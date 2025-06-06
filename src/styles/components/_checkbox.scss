@@ -1,0 +1,57 @@
+/* ==========================================================================
+   CHECKBOX COMPONENT
+   ========================================================================== */
+
+.checkbox-holder {
+  cursor: pointer;
+  padding: $spacing-xs;
+  border-radius: $radius-sm;
+  transition: all $transition-normal;
+  
+  &:hover {
+    background: rgba($color-success, 0.1);
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid $border-medium;
+  border-radius: $radius-sm;
+  position: relative;
+  transition: all $transition-normal;
+  background: white;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: translate(-50%, -60%) rotate(45deg);
+    opacity: 0;
+    transition: all $transition-fast;
+  }
+  
+  .checkbox-holder:hover & {
+    border-color: $color-success;
+    background: rgba($color-success, 0.1);
+  }
+  
+  .checkbox-holder:active & {
+    background: $color-success;
+    border-color: $color-success;
+    
+    &::after {
+      opacity: 1;
+    }
+  }
+}

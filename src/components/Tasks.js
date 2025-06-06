@@ -6,13 +6,17 @@ import { useTasks } from '../hooks';
 import { collatedTasks } from '../constants';
 import { getTitle, getCollatedTitle, collatedTasksExist } from '../helpers';
 import { useSelectedProjectValue, useProjectsValue } from '../context';
-import { firebase } from '../firebase';
+import { useAuth } from '../context/auth-context';
+import { useNotifications } from '../context/notification-context';
+import { tasksService } from '../lib/supabase-native';
 import moment from 'moment';
 import { FiZap, FiList, FiClock, FiUser, FiTag, FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 export const Tasks = () => {
   const { selectedProject } = useSelectedProjectValue();
   const { projects } = useProjectsValue();
+  const { user } = useAuth();
+  const { showSuccess, showError, showOptimisticUpdateError } = useNotifications();
   const { 
     tasks, 
     addTaskOptimistic, 
@@ -60,7 +64,7 @@ export const Tasks = () => {
       task: taskData.task,
       date: collatedDate || taskData.date || '',
       priority: taskData.priority || 'medium',
-      userId: 'demo-user',
+      userId: user?.id,
       aiEnhanced: taskData.aiEnhanced || false,
       metadata: taskData.metadata || {},
       parentTaskId: taskData.parentTaskId || null, // For subtasks
@@ -73,17 +77,28 @@ export const Tasks = () => {
 
     try {
       // Background database update
-      const docRef = await firebase
-        .firestore()
-        .collection('tasks')
-        .add(finalTaskData);
+      const createdTask = await tasksService.createTask(finalTaskData);
       
       // Update the temp task with real ID when database responds
-      updateTaskOptimistic(tempId, { id: docRef.id, _optimistic: false });
+      updateTaskOptimistic(tempId, { id: createdTask.id, _optimistic: false });
+      
+      // Return the created task data for parent-child relationships
+      return {
+        id: createdTask.id,
+        tempId: tempId,
+        task: createdTask
+      };
     } catch (error) {
       console.error('Error adding task:', error);
       // Revert optimistic update on error
       revertOptimisticUpdate(originalTasks);
+      
+      // Show user-friendly error notification with retry option
+      showOptimisticUpdateError('save task', originalTasks, () => {
+        handleAddTask(finalTaskData);
+      });
+      
+      throw error; // Re-throw so caller can handle the error
     }
   };
 
@@ -97,15 +112,17 @@ export const Tasks = () => {
 
       try {
         // Background database update
-        await firebase
-          .firestore()
-          .collection('tasks')
-          .doc(taskId)
-          .delete();
+        await tasksService.deleteTask(taskId);
+        showSuccess('Task deleted successfully');
       } catch (error) {
         console.error('Error deleting task:', error);
         // Revert optimistic update on error
         revertOptimisticUpdate(originalTasks);
+        
+        // Show error notification with retry option
+        showOptimisticUpdateError('delete task', originalTasks, () => {
+          handleDeleteTask(taskId);
+        });
       }
     }
   };
@@ -127,17 +144,24 @@ export const Tasks = () => {
 
       try {
         // Background database update
-        await firebase
-          .firestore()
-          .collection('tasks')
-          .doc(editingTask)
-          .update({
-            task: editingTaskText.trim()
-          });
+        await tasksService.updateTask(editingTask, {
+          task: editingTaskText.trim()
+        });
+        showSuccess('Task updated successfully');
       } catch (error) {
         console.error('Error updating task:', error);
         // Revert optimistic update on error
         revertOptimisticUpdate(originalTasks);
+        
+        // Show error notification with retry option
+        const currentTaskData = tasks.find(t => t.id === editingTask);
+        showOptimisticUpdateError('update task', originalTasks, () => {
+          if (currentTaskData) {
+            handleEditTask(editingTask, currentTaskData.task);
+            setEditingTaskText(editingTaskText.trim());
+          }
+        });
+        
         // Reopen edit modal with original text
         setEditingTask(editingTask);
         setEditingTaskText(currentTask.task);

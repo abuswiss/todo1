@@ -1,0 +1,301 @@
+/* ==========================================================================
+   TASKS COMPONENT
+   ========================================================================== */
+
+.tasks {
+  h2 {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    margin: 0 0 $spacing-3xl;
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+
+    .tasks-icon {
+      width: 28px;
+      height: 28px;
+      color: $color-primary;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__item {
+    @include glassmorphic(0.08, 12px, 0.08);
+    padding: $spacing-lg;
+    border-radius: $radius-xl;
+    transition: all $transition-slow;
+    border-left: 4px solid transparent;
+    position: relative;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.08),
+        0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+
+    // Priority indicators
+    &--high {
+      border-left-color: $color-error;
+      
+      .task-priority {
+        color: $color-error;
+        background: rgba($color-error, 0.1);
+      }
+    }
+
+    &--medium {
+      border-left-color: $color-warning;
+      
+      .task-priority {
+        color: $color-warning-dark;
+        background: rgba($color-warning, 0.1);
+      }
+    }
+
+    &--low {
+      border-left-color: $color-success;
+      
+      .task-priority {
+        color: $color-success-dark;
+        background: rgba($color-success, 0.1);
+      }
+    }
+
+    // AI enhanced indicator
+    &--ai-enhanced {
+      &::before {
+        content: '✨';
+        position: absolute;
+        top: $spacing-md;
+        right: $spacing-md;
+        font-size: $font-size-sm;
+        opacity: 0.7;
+      }
+    }
+
+    // Editing state
+    &--editing {
+      background: rgba($color-primary, 0.05);
+      border-left-color: $color-primary;
+    }
+  }
+
+  &__content {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-lg;
+  }
+
+  &__checkbox {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__text {
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    line-height: 1.5;
+    margin: 0 0 $spacing-sm;
+    word-break: break-word;
+    
+    &--editing {
+      display: none;
+    }
+  }
+
+  &__edit-input {
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    border: 2px solid $color-primary;
+    border-radius: $radius-md;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    background: white;
+    color: $text-primary;
+    
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    opacity: 0;
+    transition: opacity $transition-normal;
+  }
+
+  &__item:hover &__actions {
+    opacity: 1;
+  }
+
+  &__action {
+    @include transparent-button();
+    padding: $spacing-xs;
+    border-radius: $radius-sm;
+    color: $text-tertiary;
+    transition: all $transition-normal;
+    
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    &:hover {
+      color: $text-primary;
+      background: rgba(0, 0, 0, 0.05);
+      transform: scale(1.1);
+    }
+    
+    &--edit:hover {
+      color: $color-primary;
+      background: rgba($color-primary, 0.1);
+    }
+    
+    &--delete:hover {
+      color: $color-error;
+      background: rgba($color-error, 0.1);
+    }
+  }
+
+  &__edit-actions {
+    display: flex;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+    
+    .save-btn {
+      @include button-primary();
+      padding: $spacing-sm $spacing-lg;
+      font-size: $font-size-sm;
+    }
+    
+    .cancel-btn {
+      @include button-secondary();
+      padding: $spacing-sm $spacing-lg;
+      font-size: $font-size-sm;
+    }
+  }
+}
+
+// Task metadata elements
+.task-priority {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  padding: 2px $spacing-sm;
+  border-radius: $radius-sm;
+  letter-spacing: 0.05em;
+}
+
+.task-date {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.task-project {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 2px $spacing-sm;
+  border-radius: $radius-sm;
+}
+
+.task-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  
+  &__tag {
+    font-size: $font-size-xs;
+    background: rgba($color-primary, 0.1);
+    color: $color-primary;
+    padding: 2px $spacing-xs;
+    border-radius: $radius-sm;
+    font-weight: $font-weight-medium;
+  }
+}
+
+// Subtasks
+.task-subtasks {
+  margin-top: $spacing-lg;
+  padding-left: $spacing-2xl;
+  border-left: 2px solid rgba(0, 0, 0, 0.06);
+  
+  .tasks__item {
+    margin-bottom: $spacing-sm;
+    padding: $spacing-md;
+    font-size: $font-size-sm;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Empty state
+.tasks__empty {
+  @extend .empty-state;
+  
+  &__icon {
+    @extend .empty-state__icon;
+  }
+  
+  &__title {
+    @extend .empty-state__title;
+  }
+  
+  &__description {
+    @extend .empty-state__description;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: $breakpoint-sm) {
+  .tasks {
+    &__item {
+      padding: $spacing-md;
+    }
+    
+    &__content {
+      gap: $spacing-md;
+    }
+    
+    &__meta {
+      gap: $spacing-sm;
+    }
+    
+    &__actions {
+      opacity: 1; // Always show on mobile
+    }
+  }
+}

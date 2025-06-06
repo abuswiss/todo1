@@ -8,6 +8,7 @@ import {
   FiClock,
   FiTarget,
 } from 'react-icons/fi';
+import { taskProcessor, AIClientError, AI_ERROR_TYPES } from '../lib/ai-client';
 
 const SmartTaskInput = ({ onAddTask, projectId }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -70,42 +71,54 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
     setIsProcessing(true);
 
     try {
-      // Add 5 second timeout for faster user experience
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const fullContext = {
+        projectId,
+        ...context,
+      };
+
+      let result;
       
-      const response = await fetch('/api/ai-task-processor', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userInput: text,
-          feature,
-          context: {
-            projectId,
-            ...context,
-          },
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const result = await response.json();
-
-        if (feature === 'smart-parse' && result.parsed) {
-          setParsedTask(result.parsed);
-        } else {
+      switch (feature) {
+        case 'smart-parse':
+          result = await taskProcessor.smartParse(text, { 
+            context: fullContext, 
+            timeout: 5000 
+          });
+          setParsedTask(result);
+          break;
+          
+        case 'task-breakdown':
+          result = await taskProcessor.breakdownTask(text, fullContext);
           setAiSuggestions(result);
-        }
+          break;
+          
+        case 'smart-scheduling':
+          result = await taskProcessor.getSmartScheduling(text, fullContext);
+          setAiSuggestions(result);
+          break;
+          
+        case 'contextual-suggestions':
+          result = await taskProcessor.getContextualSuggestions(text, fullContext);
+          setAiSuggestions(result);
+          break;
+          
+        default:
+          result = await taskProcessor.smartParse(text, { 
+            context: fullContext, 
+            timeout: 5000 
+          });
+          setParsedTask(result);
       }
+
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.log('AI request timeout - continuing without AI suggestions');
+      if (error instanceof AIClientError) {
+        if (error.type === AI_ERROR_TYPES.TIMEOUT_ERROR) {
+          console.log('AI request timeout - continuing without AI suggestions');
+        } else {
+          console.error('AI processing error:', error.message);
+        }
       } else {
-        console.error('AI processing error:', error);
+        console.error('Unexpected error:', error);
       }
     } finally {
       setIsProcessing(false);
@@ -243,43 +256,65 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
       };
     }
 
-    // Add main task first and get its ID
-    await onAddTask(mainTaskData);
+    try {
+      // Add main task first and wait for its ID
+      const createdMainTask = await onAddTask(mainTaskData);
 
-    // Wait a moment for the main task to be processed before adding subtasks
-    setTimeout(() => {
-      // Get the suggestions from either parsedTask or aiSuggestions
-      const suggestions =
-        parsedTask?.suggestions || aiSuggestions?.suggestions || [];
+      if (createdMainTask?.id) {
+        // Get the suggestions from either parsedTask or aiSuggestions
+        const suggestions = parsedTask?.suggestions || 
+                           aiSuggestions?.suggestions || 
+                           aiSuggestions?.breakdown || [];
 
-      // Add each selected suggestion as a subtask
-      const subtasks = Array.from(selectedSuggestions)
-        .map((suggestionId) => {
-          const [index] = suggestionId.split('-');
-          const suggestion = suggestions[parseInt(index, 10)];
+        // Add each selected suggestion as a subtask with proper parent relationship
+        const subtasks = Array.from(selectedSuggestions)
+          .map((suggestionId) => {
+            const [index] = suggestionId.split('-');
+            const suggestion = suggestions[parseInt(index, 10)];
 
-          if (suggestion) {
-            return {
-              task: suggestion,
-              projectId: projectId || '1',
-              date: '',
-              priority: 'low',
-              aiEnhanced: true,
-              parentTaskId: null, // Will be handled by the parent-child relationship logic
-              metadata: {
-                parentTask: mainTaskData.task,
-                type: 'subtask',
-                aiGenerated: true,
-              },
-            };
+            if (suggestion) {
+              const subtaskText = typeof suggestion === 'string' ? suggestion : 
+                                 suggestion.task || suggestion;
+              const subtaskPriority = suggestion.priority || 'low';
+              
+              return {
+                task: subtaskText,
+                projectId: projectId || '1',
+                date: '',
+                priority: subtaskPriority,
+                aiEnhanced: true,
+                parentTaskId: createdMainTask.id, // Properly set parent task ID
+                metadata: {
+                  parentTask: mainTaskData.task,
+                  type: 'subtask',
+                  aiGenerated: true,
+                  estimatedTime: suggestion.estimatedTime,
+                },
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        // Add subtasks sequentially to avoid race conditions
+        const subtaskPromises = subtasks.map(async (subtaskData) => {
+          try {
+            await onAddTask(subtaskData);
+          } catch (error) {
+            console.error('Error creating subtask:', subtaskData.task, error);
+            // Continue with other subtasks even if one fails
           }
-          return null;
-        })
-        .filter(Boolean);
+        });
 
-      // Add all subtasks in parallel
-      Promise.all(subtasks.map((subtaskData) => onAddTask(subtaskData)));
-    }, 200); // Small delay to ensure main task is created first
+        // Wait for all subtasks to be processed
+        await Promise.allSettled(subtaskPromises);
+      } else {
+        console.warn('Main task creation did not return an ID, skipping subtask creation');
+      }
+    } catch (error) {
+      console.error('Error creating main task:', error);
+      // Don't create subtasks if main task creation failed
+    }
 
     // Reset form
     setInput('');
@@ -313,23 +348,31 @@ const SmartTaskInput = ({ onAddTask, projectId }) => {
         };
       }
 
-      await onAddTask(mainTaskData);
+      try {
+        const createdMainTask = await onAddTask(mainTaskData);
 
-      const suggestionTaskData = {
-        task: suggestion,
-        projectId: projectId || '1',
-        date: '',
-        priority: 'low',
-        aiEnhanced: true,
-        parentTaskId: null,
-        metadata: {
-          parentTask: mainTaskData.task,
-          type: 'subtask',
-          aiGenerated: true,
-        },
-      };
+        if (createdMainTask?.id) {
+          const suggestionTaskData = {
+            task: suggestion,
+            projectId: projectId || '1',
+            date: '',
+            priority: 'low',
+            aiEnhanced: true,
+            parentTaskId: createdMainTask.id, // Properly set parent task ID
+            metadata: {
+              parentTask: mainTaskData.task,
+              type: 'subtask',
+              aiGenerated: true,
+            },
+          };
 
-      await onAddTask(suggestionTaskData);
+          await onAddTask(suggestionTaskData);
+        } else {
+          console.warn('Main task creation did not return an ID, skipping subtask creation');
+        }
+      } catch (error) {
+        console.error('Error creating main task or subtask:', error);
+      }
 
       setInput('');
       setParsedTask(null);

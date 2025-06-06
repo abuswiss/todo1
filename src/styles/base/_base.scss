@@ -1,0 +1,139 @@
+/* ==========================================================================
+   BASE STYLES AND RESET
+   ========================================================================== */
+
+// Font imports
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700;800;900&display=swap');
+
+// Box sizing reset
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+// Base body styles
+body {
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  font-family: $font-family-primary;
+  color: $text-primary;
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.05) 0%, 
+    rgba(118, 75, 162, 0.04) 25%, 
+    rgba(240, 147, 251, 0.04) 50%, 
+    rgba(245, 87, 108, 0.04) 75%, 
+    rgba(79, 172, 254, 0.05) 100%),
+    linear-gradient(45deg, #f8f9fa 0%, #ffffff 50%, #f5f5f7 100%);
+  background-size: 400% 400%, 100% 100%;
+  animation: gradientShift 30s ease infinite;
+  font-smooth: always;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+// Background animation
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// Common animations
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Loading states
+.loading-container {
+  min-height: 100vh;
+  @include flex-center();
+}
+
+.loading-spinner {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+  @include fadeIn();
+}
+
+// Focus management
+*:focus {
+  outline: none;
+}
+
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+[tabindex]:focus {
+  @include focus-outline();
+}
+
+// Scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+// Selection styling
+::selection {
+  background: rgba($color-primary, 0.2);
+  color: $text-primary;
+}
+
+::-moz-selection {
+  background: rgba($color-primary, 0.2);
+  color: $text-primary;
+}

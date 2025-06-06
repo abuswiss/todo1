@@ -1,19 +1,25 @@
 /* eslint-disable no-nested-ternary */
 import { useState, useEffect } from 'react';
 import moment from 'moment';
-import { firebase } from '../firebase';
+import { tasksService, projectsService } from '../lib/supabase-native';
 import { collatedTasksExist } from '../helpers';
+import { useAuth } from '../context/auth-context';
 
 export const useTasks = selectedProject => {
   const [tasks, setTasks] = useState([]);
   const [archivedTasks, setArchivedTasks] = useState([]);
+  const { user } = useAuth();
 
-  // Optimistic update functions
+  // Native optimistic update functions with relational data
   const addTaskOptimistic = (taskData) => {
     const optimisticTask = {
       id: 'temp-' + Date.now(),
       ...taskData,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      project: taskData.projectId ? { id: taskData.projectId, name: 'Loading...' } : null,
+      subtasks: [],
+      parent_task: null,
       _optimistic: true
     };
     setTasks(prevTasks => [optimisticTask, ...prevTasks]);
@@ -24,7 +30,12 @@ export const useTasks = selectedProject => {
     setTasks(prevTasks => 
       prevTasks.map(task => 
         task.id === taskId 
-          ? { ...task, ...updates, _optimistic: true }
+          ? { 
+              ...task, 
+              ...updates, 
+              updated_at: new Date().toISOString(),
+              _optimistic: true 
+            }
           : task
       )
     );
@@ -32,55 +43,85 @@ export const useTasks = selectedProject => {
 
   const deleteTaskOptimistic = (taskId) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+    setArchivedTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
   };
 
   const archiveTaskOptimistic = (taskId) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+    const taskToArchive = tasks.find(task => task.id === taskId);
+    if (taskToArchive) {
+      const archivedTask = { ...taskToArchive, archived: true, _optimistic: true };
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+      setArchivedTasks(prevTasks => [archivedTask, ...prevTasks]);
+    }
   };
 
-  const revertOptimisticUpdate = (originalTasks) => {
+  const revertOptimisticUpdate = (originalTasks, originalArchived = []) => {
     setTasks(originalTasks);
+    setArchivedTasks(originalArchived);
   };
 
   useEffect(() => {
-    let unsubscribe = firebase
-      .firestore()
-      .collection('tasks')
-      .where('userId', '==', 'demo-user');
+    if (!user) {
+      setTasks([]);
+      setArchivedTasks([]);
+      return;
+    }
 
-    unsubscribe =
-      selectedProject && !collatedTasksExist(selectedProject)
-        ? (unsubscribe = unsubscribe.where('projectId', '==', selectedProject))
-        : selectedProject === 'TODAY'
-        ? (unsubscribe = unsubscribe.where(
-            'date',
-            '==',
-            moment().format('DD/MM/YYYY')
-          ))
-        : selectedProject === 'INBOX' || selectedProject === 0
-        ? (unsubscribe = unsubscribe.where('date', '==', ''))
-        : unsubscribe;
+    // Build native Supabase filters based on selected project
+    const filters = { archived: false }; // Default: only show active tasks
+    
+    if (selectedProject && !collatedTasksExist(selectedProject)) {
+      // Specific project selected
+      filters.projectId = selectedProject;
+    } else if (selectedProject === 'TODAY') {
+      // Today's tasks - use PostgreSQL date filtering
+      filters.dateFilter = 'TODAY';
+    } else if (selectedProject === 'NEXT_7') {
+      // Next 7 days - use PostgreSQL date filtering  
+      filters.dateFilter = 'NEXT_7';
+    } else if (selectedProject === 'INBOX' || selectedProject === 0) {
+      // Inbox - tasks with no date or empty date
+      filters.projectId = '1'; // Inbox project
+    }
 
-    unsubscribe = unsubscribe.onSnapshot(snapshot => {
-      const newTasks = snapshot.docs.map(task => ({
-        id: task.id,
-        ...task.data(),
-      }));
+    console.log('Setting up native Supabase subscription for user:', user.id, 'filters:', filters);
 
-      setTasks(
-        selectedProject === 'NEXT_7'
-          ? newTasks.filter(
-              task =>
-                moment(task.date, 'DD-MM-YYYY').diff(moment(), 'days') <= 7 &&
-                task.archived !== true
-            )
-          : newTasks.filter(task => task.archived !== true)
-      );
-      setArchivedTasks(newTasks.filter(task => task.archived !== false));
+    // Use native Supabase subscription with relational data
+    const unsubscribe = tasksService.subscribeToTasks(user.id, filters, (allTasks) => {
+      console.log('Received tasks from native subscription:', allTasks.length);
+      
+      // Separate active and archived tasks
+      const activeTasks = allTasks.filter(task => !task.archived);
+      const archived = allTasks.filter(task => task.archived);
+      
+      // Apply client-side filtering for special collections
+      let filteredActiveTasks = activeTasks;
+      
+      if (selectedProject === 'NEXT_7') {
+        // For NEXT_7, filter tasks due within next 7 days
+        const today = new Date();
+        const nextWeek = new Date();
+        nextWeek.setDate(today.getDate() + 7);
+        
+        filteredActiveTasks = activeTasks.filter(task => {
+          if (!task.date) return false;
+          const taskDate = new Date(task.date.split('/').reverse().join('-'));
+          return taskDate >= today && taskDate <= nextWeek;
+        });
+      } else if (selectedProject === 'INBOX' || selectedProject === 0) {
+        // For inbox, show tasks with no date or empty date
+        filteredActiveTasks = activeTasks.filter(task => !task.date || task.date === '');
+      }
+
+      setTasks(filteredActiveTasks);
+      setArchivedTasks(archived);
     });
 
-    return () => unsubscribe();
-  }, [selectedProject]);
+    return () => {
+      console.log('Unsubscribing from native Supabase subscription');
+      unsubscribe && unsubscribe();
+    };
+  }, [selectedProject, user]);
 
   return { 
     tasks, 
@@ -95,25 +136,39 @@ export const useTasks = selectedProject => {
 
 export const useProjects = () => {
   const [projects, setProjects] = useState([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    firebase
-      .firestore()
-      .collection('projects')
-      .where('userId', '==', 'demo-user')
-      .orderBy('id')
-      .get()
-      .then(snapshot => {
-        const allProjects = snapshot.docs.map(project => ({
-          ...project.data(),
-          docId: project.id,
-        }));
+    if (!user) {
+      setProjects([]);
+      return;
+    }
 
-        if (JSON.stringify(allProjects) !== JSON.stringify(projects)) {
-          setProjects(allProjects);
-        }
-      });
-  }, [projects]);
+    console.log('Setting up native Supabase projects subscription for user:', user.id);
+    
+    // Use native Supabase projects service with task counts
+    const unsubscribe = projectsService.subscribeToProjects(user.id, (allProjects) => {
+      console.log('Received projects from native subscription:', allProjects.length);
+      
+      // Transform for backward compatibility while adding new native features
+      const transformedProjects = allProjects.map(project => ({
+        ...project,
+        docId: project.id, // Backward compatibility
+        projectId: project.id, // Backward compatibility
+        taskCount: project.task_count?.[0]?.count || 0, // Native task count from PostgreSQL
+        userId: project.user_id,
+        createdAt: project.created_at,
+        updatedAt: project.updated_at
+      }));
+      
+      setProjects(transformedProjects);
+    });
+
+    return () => {
+      console.log('Unsubscribing from native Supabase projects subscription');
+      unsubscribe && unsubscribe();
+    };
+  }, [user]);
 
   return { projects, setProjects };
 };

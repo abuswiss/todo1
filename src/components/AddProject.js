@@ -1,31 +1,35 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { firebase } from '../firebase';
+import { projectsService } from '../lib/supabase-native';
 import { generatePushId } from '../helpers';
 import { useProjectsValue } from '../context';
+import { useAuth } from '../context/auth-context';
 
 export const AddProject = ({ shouldShow = false }) => {
   const [show, setShow] = useState(shouldShow);
   const [projectName, setProjectName] = useState('');
+  const { user } = useAuth();
 
   const projectId = generatePushId();
   const { projects, setProjects } = useProjectsValue();
 
-  const addProject = () =>
-    projectName &&
-    firebase
-      .firestore()
-      .collection('projects')
-      .add({
-        projectId,
+  const addProject = async () => {
+    if (!projectName) return;
+    
+    try {
+      await projectsService.createProject({
+        id: projectId,
         name: projectName,
-        userId: 'jlIFXIwyAL3tzHMtzRbw',
-      })
-      .then(() => {
-        setProjects([...projects]);
-        setProjectName('');
-        setShow(false);
+        userId: user?.id,
       });
+      
+      setProjects([...projects]);
+      setProjectName('');
+      setShow(false);
+    } catch (error) {
+      console.error('Error creating project:', error);
+    }
+  };
 
   return (
     <div className="add-project" data-testid="add-project">

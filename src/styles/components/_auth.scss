@@ -1,0 +1,158 @@
+/* ==========================================================================
+   AUTHENTICATION COMPONENTS
+   ========================================================================== */
+
+.auth-container {
+  min-height: 100vh;
+  @include flex-center();
+  padding: $spacing-xl;
+}
+
+.auth-card {
+  @include glassmorphic(0.15, 20px, 0.12);
+  max-width: 400px;
+  width: 100%;
+  padding: $spacing-4xl;
+  border-radius: $radius-2xl;
+  text-align: center;
+  box-shadow: $shadow-xl;
+  @include slideUp();
+
+  h1 {
+    margin-bottom: $spacing-3xl;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-3xl;
+    color: $text-primary;
+  }
+}
+
+.auth-logo {
+  width: 60px;
+  height: 60px;
+  margin-bottom: $spacing-xl;
+  border-radius: $radius-lg;
+}
+
+.input-group {
+  margin-bottom: $spacing-xl;
+
+  input {
+    width: 100%;
+    padding: $spacing-lg $spacing-xl;
+    border: 1px solid $border-light;
+    border-radius: $radius-lg;
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    background: rgba(255, 255, 255, 0.8);
+    transition: all $transition-slow;
+
+    &:focus {
+      outline: none;
+      border-color: rgba($color-primary, 0.6);
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    &::placeholder {
+      color: $text-tertiary;
+    }
+  }
+}
+
+.auth-button {
+  width: 100%;
+  padding: $spacing-lg $spacing-xl;
+  border: none;
+  border-radius: $radius-lg;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all $transition-slow;
+  margin-bottom: $spacing-md;
+
+  &.primary {
+    @include button-primary();
+  }
+
+  &.google {
+    background: white;
+    color: $text-primary;
+    border: 1px solid $border-light;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  &.demo {
+    background: rgba($color-warning, 0.1);
+    color: $color-warning-dark;
+    border: 1px solid rgba($color-warning, 0.2);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      background: rgba($color-warning, 0.15);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.auth-divider {
+  margin: $spacing-2xl 0;
+  color: $text-tertiary;
+  font-size: $font-size-base;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: $border-light;
+    z-index: 1;
+  }
+
+  &:after {
+    content: 'or';
+    background: rgba(245, 245, 247, 0.95);
+    padding: 0 $spacing-lg;
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.auth-toggle {
+  margin-top: $spacing-2xl;
+  color: $text-secondary;
+  font-size: $font-size-base;
+}
+
+.auth-link {
+  @include transparent-button();
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+  text-decoration: underline;
+
+  &:hover {
+    color: $color-primary-dark;
+  }
+}
+
+.error-message {
+  background: rgba($color-error, 0.1);
+  color: $color-error-dark;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-xl;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  border: 1px solid rgba($color-error, 0.2);
+}

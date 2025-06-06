@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { FiSun, FiMoon, FiCheckSquare } from 'react-icons/fi';
+import { FiSun, FiMoon, FiCheckSquare, FiLogOut } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 import { AddTask } from '../AddTask';
+import { useAuth } from '../../context/auth-context';
 
 export const Header = ({ darkMode, setDarkMode }) => {
   const [shouldShowMain, setShouldShowMain] = useState(false);
   const [showQuickAddTask, setShowQuickAddTask] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <header className="header" data-testid="header">
@@ -37,6 +39,18 @@ export const Header = ({ darkMode, setDarkMode }) => {
                 onClick={() => setDarkMode(!darkMode)}
               >
                 {darkMode ? <FiSun /> : <FiMoon />}
+              </button>
+            </li>
+            <li className="settings__user">
+              <span className="user-email">{user?.email}</span>
+              <button
+                data-testid="logout-action"
+                aria-label="Logout"
+                type="button"
+                onClick={() => signOut()}
+                className="logout-btn"
+              >
+                <FiLogOut />
               </button>
             </li>
           </ul>

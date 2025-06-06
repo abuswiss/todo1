@@ -1,0 +1,151 @@
+/* ==========================================================================
+   NOTIFICATION SYSTEM
+   ========================================================================== */
+
+.notifications-container {
+  position: fixed;
+  top: $spacing-xl;
+  right: $spacing-xl;
+  z-index: $z-toast;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.notification {
+  @include glassmorphic(0.15, 20px, 0.12);
+  margin-bottom: $spacing-md;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-xl;
+  pointer-events: auto;
+  animation: slideInRight 0.3s ease;
+  border-left: 4px solid;
+  
+  &--success {
+    border-left-color: $color-success;
+    background: rgba($color-success, 0.05);
+    
+    .notification-icon.success {
+      color: $color-success-dark;
+    }
+  }
+  
+  &--error {
+    border-left-color: $color-error;
+    background: rgba($color-error, 0.05);
+    
+    .notification-icon.error {
+      color: $color-error-dark;
+    }
+  }
+  
+  &--warning {
+    border-left-color: $color-warning;
+    background: rgba($color-warning, 0.05);
+    
+    .notification-icon.warning {
+      color: $color-warning-dark;
+    }
+  }
+  
+  &--info {
+    border-left-color: $color-info;
+    background: rgba($color-info, 0.05);
+    
+    .notification-icon.info {
+      color: $color-info-dark;
+    }
+  }
+}
+
+.notification-content {
+  display: flex;
+  align-items: flex-start;
+  padding: $spacing-lg;
+  gap: $spacing-md;
+}
+
+.notification-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.notification-message {
+  flex: 1;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+  line-height: 1.5;
+}
+
+.notification-close {
+  @include transparent-button();
+  width: 24px;
+  height: 24px;
+  border-radius: $radius-sm;
+  @include flex-center();
+  color: $text-tertiary;
+  transition: all $transition-normal;
+  flex-shrink: 0;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: $text-primary;
+  }
+  
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.notification-actions {
+  padding: 0 $spacing-lg $spacing-lg 48px;
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.notification-action {
+  @include transparent-button();
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  background: rgba($color-primary, 0.1);
+  border: 1px solid rgba($color-primary, 0.2);
+  transition: all $transition-normal;
+  
+  &:hover {
+    background: rgba($color-primary, 0.15);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: $breakpoint-md) {
+  .notifications-container {
+    top: $spacing-md;
+    right: $spacing-md;
+    left: $spacing-md;
+    max-width: none;
+  }
+  
+  .notification {
+    margin-bottom: $spacing-sm;
+  }
+  
+  .notification-content {
+    padding: $spacing-md;
+  }
+  
+  .notification-actions {
+    padding: 0 $spacing-md $spacing-md 40px;
+  }
+}

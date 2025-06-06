@@ -1,0 +1,149 @@
+/* ==========================================================================
+   AI TODOIST - MODULAR STYLES
+   Main stylesheet importing all component and layout styles
+   ========================================================================== */
+
+// Base styles (variables, mixins, reset)
+@import 'base/variables';
+@import 'base/mixins';
+@import 'base/base';
+
+// Layout components
+@import 'layout/header';
+@import 'layout/sidebar';
+@import 'layout/content';
+
+// UI Components
+@import 'components/auth';
+@import 'components/checkbox';
+@import 'components/tasks';
+@import 'components/notifications';
+
+// Additional component imports can be added here as needed
+// @import 'components/smart-task-input';
+// @import 'components/add-task';
+// @import 'components/perplexity-chat';
+// @import 'components/project-overlay';
+// @import 'components/task-date';
+
+/* ==========================================================================
+   DARK MODE STYLES
+   ========================================================================== */
+
+.darkmode {
+  // Override base variables for dark mode
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.8);
+  --text-tertiary: rgba(255, 255, 255, 0.6);
+  --bg-primary: #1a1a1a;
+  --bg-secondary: rgba(40, 40, 40, 0.95);
+  --border-light: rgba(255, 255, 255, 0.15);
+  
+  body {
+    background: linear-gradient(135deg, 
+      rgba(30, 30, 30, 0.95) 0%, 
+      rgba(20, 20, 20, 0.98) 50%, 
+      rgba(15, 15, 15, 1) 100%);
+    color: var(--text-primary);
+  }
+  
+  // Update glassmorphic backgrounds for dark mode
+  @mixin glassmorphic-dark($opacity: 0.15, $blur: 15px, $border-opacity: 0.12) {
+    background: rgba(40, 40, 40, 0.8);
+    backdrop-filter: blur($blur) saturate(120%);
+    -webkit-backdrop-filter: blur($blur) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, $border-opacity);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 1px 3px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  // Apply dark mode overrides to components
+  header,
+  .sidebar,
+  .tasks__item,
+  .auth-card,
+  .notification {
+    @include glassmorphic-dark();
+  }
+  
+  .input-group input {
+    background: rgba(60, 60, 60, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
+    
+    &:focus {
+      border-color: $color-primary;
+      background: rgba(60, 60, 60, 0.95);
+    }
+  }
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+// Text utilities
+.text-primary { color: $text-primary; }
+.text-secondary { color: $text-secondary; }
+.text-tertiary { color: $text-tertiary; }
+.text-success { color: $color-success-dark; }
+.text-warning { color: $color-warning-dark; }
+.text-error { color: $color-error-dark; }
+.text-info { color: $color-info-dark; }
+
+// Font weights
+.font-light { font-weight: $font-weight-light; }
+.font-normal { font-weight: $font-weight-normal; }
+.font-medium { font-weight: $font-weight-medium; }
+.font-semibold { font-weight: $font-weight-semibold; }
+.font-bold { font-weight: $font-weight-bold; }
+
+// Font sizes
+.text-xs { font-size: $font-size-xs; }
+.text-sm { font-size: $font-size-sm; }
+.text-base { font-size: $font-size-base; }
+.text-lg { font-size: $font-size-lg; }
+.text-xl { font-size: $font-size-xl; }
+.text-2xl { font-size: $font-size-2xl; }
+.text-3xl { font-size: $font-size-3xl; }
+
+// Spacing utilities
+.p-0 { padding: 0; }
+.p-xs { padding: $spacing-xs; }
+.p-sm { padding: $spacing-sm; }
+.p-md { padding: $spacing-md; }
+.p-lg { padding: $spacing-lg; }
+.p-xl { padding: $spacing-xl; }
+
+.m-0 { margin: 0; }
+.m-xs { margin: $spacing-xs; }
+.m-sm { margin: $spacing-sm; }
+.m-md { margin: $spacing-md; }
+.m-lg { margin: $spacing-lg; }
+.m-xl { margin: $spacing-xl; }
+
+// Display utilities
+.flex { display: flex; }
+.flex-center { @include flex-center(); }
+.flex-between { @include flex-between(); }
+.block { display: block; }
+.hidden { display: none; }
+
+// Border radius utilities
+.rounded-sm { border-radius: $radius-sm; }
+.rounded { border-radius: $radius-md; }
+.rounded-lg { border-radius: $radius-lg; }
+.rounded-xl { border-radius: $radius-xl; }
+.rounded-full { border-radius: $radius-full; }
+
+// Shadow utilities
+.shadow-sm { box-shadow: $shadow-sm; }
+.shadow { box-shadow: $shadow-md; }
+.shadow-lg { box-shadow: $shadow-lg; }
+.shadow-xl { box-shadow: $shadow-xl; }

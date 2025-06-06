@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { firebase } from '../firebase';
+import { tasksService } from '../lib/supabase-native';
+import { useNotifications } from '../context/notification-context';
 
 export const Checkbox = ({ id, taskDesc, onOptimisticArchive }) => {
+  const { showSuccess, showError } = useNotifications();
+  
   const archiveTask = async () => {
     // Immediate UI update
     if (onOptimisticArchive) {
@@ -11,11 +14,13 @@ export const Checkbox = ({ id, taskDesc, onOptimisticArchive }) => {
 
     try {
       // Background database update
-      await firebase.firestore().collection('tasks').doc(id).update({
+      await tasksService.updateTask(id, {
         archived: true,
       });
+      showSuccess('Task completed successfully');
     } catch (error) {
       console.error('Error archiving task:', error);
+      showError('Failed to complete task. Please try again.');
       // Could add error handling here to revert optimistic update
     }
   };

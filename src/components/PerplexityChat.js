@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fi';
 import { useTasks } from '../hooks';
 import { useSelectedProjectValue } from '../context';
+import { chatClient, AIClientError, AI_ERROR_TYPES } from '../lib/ai-client';
 
 const PerplexityChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,100 +55,91 @@ const PerplexityChat = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: newMessages.slice(-10), // Keep last 10 messages for context
-          taskContext: {
-            currentProject: selectedProject,
-            tasks: tasks.slice(0, 20).map(task => ({
-              id: task.id,
-              task: task.task,
-              priority: task.priority,
-              date: task.date,
-              projectId: task.projectId,
-              archived: task.archived
-            }))
-          }
-        }),
+      const taskContext = {
+        currentProject: selectedProject,
+        tasks: tasks.slice(0, 20).map(task => ({
+          id: task.id,
+          task: task.task,
+          priority: task.priority,
+          date: task.date,
+          projectId: task.projectId,
+          archived: task.archived
+        }))
+      };
+
+      // Use streaming for better user experience
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: '', streaming: true },
+      ]);
+
+      let assistantContent = '';
+
+      await chatClient.streamMessage(
+        newMessages.slice(-10), // Keep last 10 messages for context
+        taskContext,
+        (chunk) => {
+          assistantContent += chunk;
+          setMessages((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = {
+              role: 'assistant',
+              content: assistantContent,
+              streaming: true,
+            };
+            return updated;
+          });
+        }
+      );
+
+      // Mark streaming as complete
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          role: 'assistant',
+          content: assistantContent,
+          streaming: false,
+        };
+        return updated;
       });
 
-      if (response.ok) {
-        // Check if it's a streaming response
-        const contentType = response.headers.get('content-type');
-
-        if (contentType?.includes('text/plain')) {
-          // Handle streaming response
-          const reader = response.body?.getReader();
-          const decoder = new TextDecoder();
-
-          if (reader) {
-            setMessages((prev) => [
-              ...prev,
-              { role: 'assistant', content: '', streaming: true },
-            ]);
-
-            let assistantContent = '';
-
-            try {
-              while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                const chunk = decoder.decode(value, { stream: true });
-                assistantContent += chunk;
-
-                setMessages((prev) => {
-                  const updated = [...prev];
-                  updated[updated.length - 1] = {
-                    role: 'assistant',
-                    content: assistantContent,
-                    streaming: true,
-                  };
-                  return updated;
-                });
-              }
-            } finally {
-              reader.releaseLock();
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1] = {
-                  role: 'assistant',
-                  content: assistantContent,
-                  streaming: false,
-                };
-                return updated;
-              });
-            }
-          }
-        } else {
-          // Handle JSON response (fallback)
-          const data = await response.json();
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: 'assistant',
-              content:
-                data.response || data.error || 'Sorry, I encountered an error.',
-              fallback: data.fallback,
-            },
-          ]);
-        }
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
     } catch (error) {
       console.error('Chat error:', error);
+      
+      let errorMessage = "❌ Sorry, I'm having trouble connecting right now. Please try again later.";
+      let fallback = false;
+
+      if (error instanceof AIClientError) {
+        switch (error.type) {
+          case AI_ERROR_TYPES.NETWORK_ERROR:
+            errorMessage = "🌐 Network connection issue. Please check your connection and try again.";
+            break;
+          case AI_ERROR_TYPES.TIMEOUT_ERROR:
+            errorMessage = "⏱️ Request timed out. The AI service might be busy. Please try again.";
+            break;
+          case AI_ERROR_TYPES.RATE_LIMIT_ERROR:
+            errorMessage = "🚫 Rate limit exceeded. Please wait a moment before trying again.";
+            break;
+          case AI_ERROR_TYPES.API_ERROR:
+            if (error.details?.fallback) {
+              errorMessage = error.message;
+              fallback = true;
+            } else {
+              errorMessage = "🔧 AI service is temporarily unavailable. Please try again later.";
+            }
+            break;
+          default:
+            errorMessage = error.message || errorMessage;
+        }
+      }
+
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content:
-            "❌ Sorry, I'm having trouble connecting right now. Please try again later.",
-          error: true,
+          content: errorMessage,
+          error: !fallback,
+          fallback: fallback,
         },
       ]);
     } finally {

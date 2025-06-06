@@ -1,0 +1,239 @@
+/* ==========================================================================
+   SIDEBAR LAYOUT
+   ========================================================================== */
+
+.sidebar {
+  @include no-select();
+  width: $sidebar-width;
+  height: calc(100vh);
+  padding-top: $header-height;
+  position: fixed;
+  left: 0;
+  top: 0;
+  @include glassmorphic(0.15, 20px, 0.08);
+  border-right: 1px solid $border-light;
+  z-index: $z-sticky;
+  overflow-y: auto;
+
+  &__generic {
+    list-style: none;
+    margin: 0;
+    padding: $spacing-2xl $spacing-xl;
+
+    li {
+      margin-bottom: $spacing-sm;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__middle {
+    margin-top: $spacing-3xl;
+    padding: $spacing-lg $spacing-xl;
+    border-top: 1px solid $border-light;
+
+    span {
+      display: block;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $text-secondary;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: $spacing-lg;
+    }
+  }
+
+  &__project {
+    @include flex-between();
+    padding: $spacing-md $spacing-lg;
+    margin-bottom: $spacing-xs;
+    border-radius: $radius-lg;
+    cursor: pointer;
+    transition: all $transition-normal;
+    position: relative;
+    background: transparent;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.04);
+      transform: translateX(2px);
+    }
+
+    &.active {
+      background: rgba($color-primary, 0.08);
+      color: $color-primary;
+      font-weight: $font-weight-semibold;
+      
+      .sidebar__dot {
+        color: $color-primary;
+      }
+    }
+
+    &[data-doc-id="1"] .sidebar__dot {
+      color: #007AFF;
+    }
+    &[data-doc-id="2"] .sidebar__dot {
+      color: #32D74B;
+    }
+    &[data-doc-id="3"] .sidebar__dot {
+      color: #FF9F0A;
+    }
+    &[data-doc-id="4"] .sidebar__dot {
+      color: #FF3B30;
+    }
+    &[data-doc-id="5"] .sidebar__dot {
+      color: #AF52DE;
+    }
+  }
+
+  &__generic {
+    li {
+      @include flex-between();
+      padding: $spacing-md $spacing-lg;
+      border-radius: $radius-lg;
+      cursor: pointer;
+      transition: all $transition-normal;
+      color: $text-primary;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.04);
+        transform: translateX(2px);
+      }
+
+      &.active {
+        background: rgba($color-primary, 0.08);
+        color: $color-primary;
+        font-weight: $font-weight-semibold;
+      }
+
+      .sidebar__generic-icon {
+        width: 18px;
+        height: 18px;
+        margin-right: $spacing-md;
+        color: inherit;
+      }
+
+      span {
+        @include flex-center();
+        gap: $spacing-sm;
+        font-size: $font-size-base;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+
+  &__dot {
+    font-size: $font-size-lg;
+    margin-right: $spacing-md;
+    color: $text-tertiary;
+  }
+
+  &__project-name {
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    @include truncate();
+    flex: 1;
+  }
+
+  &__project-delete {
+    opacity: 0;
+    padding: $spacing-xs;
+    border-radius: $radius-sm;
+    color: $text-tertiary;
+    transition: all $transition-normal;
+    position: relative;
+    
+    &:hover {
+      color: $color-error;
+      background: rgba($color-error, 0.1);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__project:hover &__project-delete {
+    opacity: 1;
+  }
+}
+
+// Project delete modal
+.project-delete-modal {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: $z-modal;
+  margin-top: $spacing-sm;
+
+  &__inner {
+    @include glassmorphic(0.95, 20px, 0.15);
+    padding: $spacing-lg;
+    border-radius: $radius-xl;
+    min-width: 250px;
+    box-shadow: $shadow-xl;
+    animation: slideUp 0.2s ease;
+
+    p {
+      margin: 0 0 $spacing-lg;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $text-primary;
+      line-height: 1.4;
+    }
+
+    button {
+      @include button-primary();
+      margin-right: $spacing-sm;
+      background: linear-gradient(135deg, $color-error 0%, #DC2626 100%);
+      
+      &:hover {
+        box-shadow: 0 8px 20px rgba($color-error, 0.4);
+      }
+    }
+
+    span {
+      @include button-secondary();
+      display: inline-block;
+      text-decoration: none;
+    }
+  }
+}
+
+// Responsive sidebar
+@media (max-width: $breakpoint-lg) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform $transition-slow;
+    
+    &.sidebar--open {
+      transform: translateX(0);
+    }
+  }
+  
+  .sidebar-overlay {
+    @include absolute-cover();
+    background: rgba(0, 0, 0, 0.5);
+    z-index: $z-modal-backdrop;
+    display: none;
+    
+    &.sidebar-overlay--visible {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .sidebar {
+    width: 280px;
+    
+    &__generic,
+    &__middle {
+      padding-left: $spacing-lg;
+      padding-right: $spacing-lg;
+    }
+  }
+}

@@ -1,0 +1,144 @@
+/* ==========================================================================
+   MAIN CONTENT LAYOUT
+   ========================================================================== */
+
+.content {
+  margin-left: $sidebar-width;
+  padding-top: $header-height;
+  min-height: 100vh;
+  position: relative;
+  
+  &__section {
+    max-width: $content-max-width;
+    margin: 0 auto;
+    padding: $spacing-4xl $spacing-3xl;
+    
+    @include respond-to(md) {
+      padding: $spacing-3xl $spacing-2xl;
+    }
+    
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-2xl $spacing-lg;
+    }
+  }
+}
+
+// Responsive content layout
+@media (max-width: $breakpoint-lg) {
+  .content {
+    margin-left: 0;
+    
+    &__section {
+      padding-left: $spacing-2xl;
+      padding-right: $spacing-2xl;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .content {
+    &__section {
+      padding-left: $spacing-lg;
+      padding-right: $spacing-lg;
+    }
+  }
+}
+
+// Main content grid
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-3xl;
+  
+  @include respond-to(lg) {
+    grid-template-columns: 1fr 300px;
+  }
+}
+
+// Content sections
+.content-header {
+  margin-bottom: $spacing-4xl;
+  
+  h1 {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    margin: 0 0 $spacing-md;
+    line-height: 1.2;
+  }
+  
+  p {
+    font-size: $font-size-md;
+    color: $text-secondary;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.content-body {
+  flex: 1;
+  
+  &__section {
+    margin-bottom: $spacing-5xl;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.content-sidebar {
+  display: none;
+  
+  @include respond-to(lg) {
+    display: block;
+  }
+  
+  &__section {
+    @include glassmorphic(0.1, 15px, 0.08);
+    padding: $spacing-2xl;
+    border-radius: $radius-xl;
+    margin-bottom: $spacing-2xl;
+    
+    h3 {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      margin: 0 0 $spacing-lg;
+    }
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Empty states
+.empty-state {
+  @include flex-center();
+  flex-direction: column;
+  padding: $spacing-6xl $spacing-2xl;
+  text-align: center;
+  
+  &__icon {
+    width: 64px;
+    height: 64px;
+    color: $text-tertiary;
+    margin-bottom: $spacing-2xl;
+  }
+  
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin: 0 0 $spacing-md;
+  }
+  
+  &__description {
+    font-size: $font-size-base;
+    color: $text-secondary;
+    margin: 0;
+    max-width: 400px;
+    line-height: 1.6;
+  }
+}
