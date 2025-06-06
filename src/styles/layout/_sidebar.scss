@@ -18,7 +18,7 @@
   &__generic {
     list-style: none;
     margin: 0;
-    padding: $spacing-2xl $spacing-xl;
+    padding: $spacing-xl $spacing-lg;
 
     li {
       margin-bottom: $spacing-sm;
@@ -30,8 +30,8 @@
   }
 
   &__middle {
-    margin-top: $spacing-3xl;
-    padding: $spacing-lg $spacing-xl;
+    margin-top: $spacing-2xl;
+    padding: $spacing-lg;
     border-top: 1px solid $border-light;
 
     span {
@@ -47,8 +47,8 @@
 
   &__project {
     @include flex-between();
-    padding: $spacing-md $spacing-lg;
-    margin-bottom: $spacing-xs;
+    padding: $spacing-md;
+    margin: 0 $spacing-sm $spacing-xs $spacing-sm;
     border-radius: $radius-lg;
     cursor: pointer;
     transition: all $transition-normal;
@@ -90,7 +90,8 @@
   &__generic {
     li {
       @include flex-between();
-      padding: $spacing-md $spacing-lg;
+      padding: $spacing-md;
+      margin: 0 $spacing-sm $spacing-xs $spacing-sm;
       border-radius: $radius-lg;
       cursor: pointer;
       transition: all $transition-normal;
